@@ -10,4 +10,6 @@ interface UserRepository : JpaRepository<User, Long> {
 
     fun findUserById(id: Long): User?
     fun findUserByLogin(login: String): User?
+    fun findUserByEmail(email: String): User?
+    fun findUserByNickname(nickname: String): User?
 }
