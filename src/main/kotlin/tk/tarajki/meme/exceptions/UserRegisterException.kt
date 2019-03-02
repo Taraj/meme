@@ -1,5 +1,5 @@
 package tk.tarajki.meme.exceptions
 
-class UserAddException(
+class UserRegisterException(
         message: String
 ) : IllegalArgumentException(message)

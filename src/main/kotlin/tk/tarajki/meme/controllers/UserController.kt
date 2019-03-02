@@ -1,12 +1,13 @@
 package tk.tarajki.meme.controllers
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import tk.tarajki.meme.dto.UserRegisterDto
-import tk.tarajki.meme.exceptions.UserAddException
+import org.springframework.web.server.ResponseStatusException
 import tk.tarajki.meme.models.User
+import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.UserService
-import java.lang.Exception
 
 
 @RestController
@@ -21,20 +22,15 @@ class UserController {
         return userService.findAll()
     }
 
-    @GetMapping("/{id}")
-    fun getUserById(@PathVariable id: Long): User? {
-        return userService.findUserById(id)
+    @GetMapping("/{nickname}")
+    fun getUserByNickname(@PathVariable nickname: String): User? {
+        return userService.findUserByNickname(nickname)
     }
 
-    @PostMapping("/")
-    fun userAdd(@RequestBody userRegisterDto: UserRegisterDto): String? {
-        return try {
-            userService.userAdd(userRegisterDto).toString()
-        } catch (userAddException: UserAddException) {
-            userAddException.message
-        } catch (exception: Exception) {
-            exception.toString()
-        }
+
+    @GetMapping("/me")
+    fun whoAmI(@AuthenticationPrincipal principal: UserPrincipal?):String{
+        return "Jestes ${principal?.username}"
     }
 
 }

@@ -9,7 +9,12 @@ import javax.persistence.Id
 interface UserRepository : JpaRepository<User, Long> {
 
     fun findUserById(id: Long): User?
-    fun findUserByLogin(login: String): User?
+
+    fun findUserByUsername(username: String): User?
+
     fun findUserByEmail(email: String): User?
+
     fun findUserByNickname(nickname: String): User?
+
+    fun findUserByUsernameOrEmail(username: String, email: String): User?
 }

@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://192.168.56.101:3306/meme
+    username: root
+    password: 123
+
+
+security:
+  jwt:
+    token:
+      secret-key: "kotNaPlecach"
+
