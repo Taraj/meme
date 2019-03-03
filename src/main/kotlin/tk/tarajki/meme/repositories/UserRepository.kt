@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import tk.tarajki.meme.models.User
 import javax.persistence.Id
+import javax.transaction.Transactional
 
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
@@ -17,4 +18,5 @@ interface UserRepository : JpaRepository<User, Long> {
     fun findUserByNickname(nickname: String): User?
 
     fun findUserByUsernameOrEmail(username: String, email: String): User?
+
 }

@@ -3,19 +3,17 @@ package tk.tarajki.meme.models
 import org.springframework.format.annotation.DateTimeFormat
 import java.util.*
 import javax.persistence.*
-import javax.validation.constraints.Future
 import javax.validation.constraints.NotBlank
 
 @Entity
-data class Ban(
+data class Warn(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @Future
+        @Column
         @DateTimeFormat
-        @Column(nullable = false)
-        val expireAt: Date,
+        val readAt: Date? = null,
 
         @NotBlank
         @Column(nullable = false)
@@ -30,4 +28,5 @@ data class Ban(
         @DateTimeFormat
         @Column(nullable = false)
         var createdAt: Date = Date()
+
 )

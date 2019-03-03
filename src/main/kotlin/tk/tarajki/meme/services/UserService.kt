@@ -10,10 +10,20 @@ import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.models.User
 import tk.tarajki.meme.repositories.RoleRepository
 import tk.tarajki.meme.repositories.UserRepository
-import javax.transaction.Transactional
+
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.transaction.annotation.Transactional
+import tk.tarajki.meme.dto.WarnRequest
+
+import tk.tarajki.meme.models.Ban
+import tk.tarajki.meme.models.Warn
+import tk.tarajki.meme.repositories.BanRepository
+import tk.tarajki.meme.repositories.WarnRepository
 import tk.tarajki.meme.security.JwtTokenProvider
+import tk.tarajki.meme.util.Duration
+
+import java.util.*
 
 
 @Service
@@ -34,11 +44,17 @@ class UserService {
     @Autowired
     private lateinit var jwtTokenProvider: JwtTokenProvider
 
+    @Autowired
+    private lateinit var banRepository: BanRepository
+
+    @Autowired
+    private lateinit var warnRepository: WarnRepository
 
     fun findUserByUsername(username: String): User? {
         return userRepository.findUserByUsername(username)
     }
 
+    @Transactional
     fun findUserByNickname(nickname: String): User? {
         return userRepository.findUserByNickname(nickname)
     }
@@ -47,11 +63,39 @@ class UserService {
         return userRepository.findAll()
     }
 
+    fun getUserBans(user: User): List<Ban>? {
+        return user.bans
+    }
+
+    fun getUserWarns(user: User): List<Warn>? {
+        return user.warns
+    }
+
+    @Transactional
+    fun banUser(target: User, invoker: User, reason: String, duration: Duration): Ban {
+        val ban = Ban(
+                reason = reason,
+                expireAt = duration + Date(),
+                target = target,
+                invoker = invoker
+        )
+        return banRepository.save(ban)
+    }
+
+    fun warnUser(target: User, invoker: User, reason: String): Warn {
+        val warn = Warn(
+                reason = reason,
+                target = target,
+                invoker = invoker
+        )
+        return warnRepository.save(warn)
+    }
+
 
     @Transactional
     fun register(registerRequest: RegisterRequest): User? {
 
-        if (!isValidUserRegisterDto(registerRequest)) {
+        if (!isUniqueUserRegisterDto(registerRequest)) {
             throw UserRegisterException("Invalid User.")
         }
         val role = roleRepository.findRoleByName(RoleName.ROLE_USER) ?: throw UserRegisterException("Bad role.")
@@ -68,7 +112,6 @@ class UserService {
         return userRepository.save(user)
     }
 
-
     fun login(loginRequest: LoginRequest): String {
 
         authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password))
@@ -78,57 +121,37 @@ class UserService {
     }
 
 
-    private fun isValidUserRegisterDto(registerRequest: RegisterRequest): Boolean {
-        if (!isValidEmail(registerRequest.email)) {
-            throw UserRegisterException("Invalid Email.")
-        }
+    private fun isUniqueUserRegisterDto(registerRequest: RegisterRequest): Boolean {
 
         if (!isUniqueEmail(registerRequest.email)) {
             throw UserRegisterException("Email already exist.")
-        }
-
-        if (!isValidUsername(registerRequest.username)) {
-            throw UserRegisterException("Invalid Username.")
         }
 
         if (!isUniqueUsername(registerRequest.username)) {
             throw UserRegisterException("Username already exist.")
         }
 
-        if (!isValidNickname(registerRequest.nickname)) {
-            throw UserRegisterException("Invalid Nickname.")
-        }
-
         if (!isUniqueNickname(registerRequest.nickname)) {
             throw UserRegisterException("Nickname already exist.")
-        }
-
-        if (!isValidPassword(registerRequest.password)) {
-            throw UserRegisterException("Invalid Password.")
         }
 
         return true
     }
 
-    private fun isValidEmail(email: String): Boolean = true
 
     private fun isUniqueEmail(email: String): Boolean {
         return userRepository.findUserByEmail(email) == null
     }
 
-    private fun isValidNickname(nickname: String): Boolean = true
 
     fun isUniqueNickname(nickname: String): Boolean {
         return userRepository.findUserByNickname(nickname) == null
     }
 
-    private fun isValidUsername(username: String): Boolean = true
 
     private fun isUniqueUsername(username: String): Boolean {
         return userRepository.findUserByUsername(username) == null
     }
-
-    private fun isValidPassword(password: String): Boolean = true
 
 
 }

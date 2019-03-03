@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import tk.tarajki.meme.dto.JwtAuthResponse
 import tk.tarajki.meme.dto.LoginRequest
@@ -40,6 +37,7 @@ class AuthController {
 
     }
 
+
     @PostMapping("/register")
     fun register(@RequestBody @Valid registerRequest: RegisterRequest): ResponseEntity<Nothing> {
         return try {
@@ -51,4 +49,5 @@ class AuthController {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
+
 }
