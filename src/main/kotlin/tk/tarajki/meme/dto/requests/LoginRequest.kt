@@ -1,4 +1,4 @@
-package tk.tarajki.meme.dto
+package tk.tarajki.meme.dto.requests
 
 
 import javax.validation.constraints.NotBlank

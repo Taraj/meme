@@ -7,8 +7,8 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import tk.tarajki.meme.dto.JwtAuthResponse
-import tk.tarajki.meme.dto.LoginRequest
-import tk.tarajki.meme.dto.RegisterRequest
+import tk.tarajki.meme.dto.requests.LoginRequest
+import tk.tarajki.meme.dto.requests.RegisterRequest
 import tk.tarajki.meme.exceptions.UserRegisterException
 import tk.tarajki.meme.services.UserService
 import java.lang.Exception

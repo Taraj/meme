@@ -1,10 +1,11 @@
-package tk.tarajki.meme.dto
+package tk.tarajki.meme.dto.models
 
 import java.util.*
 
 
 sealed class UserDto {
-    data class UserDtoRoleGuest(
+
+    data class Basic(
             val nickname: String,
             val avatar: String,
             val isBaned: Boolean,
@@ -15,18 +16,7 @@ sealed class UserDto {
 
     ) : UserDto()
 
-    data class UserDtoRoleUser(
-            val nickname: String,
-            val avatar: String,
-            val isBaned: Boolean,
-            val joinedAt: Date,
-            val commentsCount: Int,
-            val postsCount: Int,
-            val karma: Int
-
-    ) : UserDto()
-
-    data class UserDtoRoleAdmin(
+    data class Extended(
             val id: Long,
             val username: String,
             val nickname: String,
@@ -39,9 +29,8 @@ sealed class UserDto {
             val karma: Int
 
     ) : UserDto()
+
 }
-
-
 
 
 

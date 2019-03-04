@@ -3,27 +3,25 @@ package tk.tarajki.meme.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import tk.tarajki.meme.dto.LoginRequest
-import tk.tarajki.meme.dto.RegisterRequest
+import tk.tarajki.meme.dto.requests.LoginRequest
+import tk.tarajki.meme.dto.requests.RegisterRequest
 import tk.tarajki.meme.exceptions.UserRegisterException
-import tk.tarajki.meme.models.RoleName
-import tk.tarajki.meme.models.User
 import tk.tarajki.meme.repositories.RoleRepository
 import tk.tarajki.meme.repositories.UserRepository
 
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
-import tk.tarajki.meme.dto.WarnRequest
+import tk.tarajki.meme.dto.models.UserDto
+import tk.tarajki.meme.models.*
 
-import tk.tarajki.meme.models.Ban
-import tk.tarajki.meme.models.Warn
 import tk.tarajki.meme.repositories.BanRepository
 import tk.tarajki.meme.repositories.WarnRepository
 import tk.tarajki.meme.security.JwtTokenProvider
 import tk.tarajki.meme.util.Duration
 
 import java.util.*
+import kotlin.reflect.KClass
 
 
 @Service

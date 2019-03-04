@@ -4,15 +4,18 @@ package tk.tarajki.meme.controllers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.annotation.Secured
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import tk.tarajki.meme.dto.*
+import tk.tarajki.meme.dto.models.BanDto
+import tk.tarajki.meme.dto.models.UserDto
+import tk.tarajki.meme.dto.models.WarnDto
+import tk.tarajki.meme.dto.requests.BanRequest
+import tk.tarajki.meme.dto.requests.WarnRequest
 import tk.tarajki.meme.factories.BanDtoFactory
 import tk.tarajki.meme.factories.UserDtoFactory
 import tk.tarajki.meme.factories.WarnDtoFactory
+import tk.tarajki.meme.models.RoleName
 
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.UserService
@@ -30,7 +33,12 @@ class UserController {
     @GetMapping("/")
     fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {
         return userService.findAll()?.map {
-            UserDtoFactory.getUserDto(it, principal?.getRole())
+
+            val kind = when {
+                principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
+                else -> UserDto::Basic
+            }
+            UserDtoFactory.getUserDto(it, kind)
         }
     }
 
@@ -38,7 +46,11 @@ class UserController {
     fun getUserByNickname(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): UserDto? {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        return UserDtoFactory.getUserDto(user, principal?.getRole())
+        val kind = when {
+            principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
+            else -> UserDto::Basic
+        }
+        return UserDtoFactory.getUserDto(user, kind)
     }
 
     @PostMapping("/{nickname}/bans")
@@ -56,7 +68,7 @@ class UserController {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         return userService.getUserBans(user)?.map {
-            BanDtoFactory.getBanDto(it)
+            BanDtoFactory.getBanDto(it, BanDto::Basic)
         }
     }
 
@@ -73,17 +85,19 @@ class UserController {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         return userService.getUserWarns(user)?.map {
-            WarnDtoFactory.getWarnDto(it)
+            WarnDtoFactory.getWarnDto(it, WarnDto::Basic)
         }
     }
 
     @GetMapping("/{nickname}/posts")
-    fun getPosts(){
-
+    fun getPosts(@PathVariable nickname: String) {
+        val user = userService.findUserByNickname(nickname)
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
     }
 
     @GetMapping("/{nickname}/comments")
-    fun getComments(){
-
+    fun getComments(@PathVariable nickname: String) {
+        val user = userService.findUserByNickname(nickname)
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
     }
 }
