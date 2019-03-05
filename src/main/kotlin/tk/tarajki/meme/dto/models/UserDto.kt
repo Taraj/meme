@@ -11,9 +11,7 @@ sealed class UserDto {
             val isBaned: Boolean,
             val joinedAt: Date,
             val commentsCount: Int,
-            val postsCount: Int,
-            val karma: Int
-
+            val postsCount: Int
     ) : UserDto()
 
     data class Extended(
@@ -25,9 +23,7 @@ sealed class UserDto {
             val isBaned: Boolean,
             val joinedAt: Date,
             val commentsCount: Int,
-            val postsCount: Int,
-            val karma: Int
-
+            val postsCount: Int
     ) : UserDto()
 
 }

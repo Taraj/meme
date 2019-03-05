@@ -7,17 +7,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import tk.tarajki.meme.dto.models.BanDto
-import tk.tarajki.meme.dto.models.UserDto
-import tk.tarajki.meme.dto.models.WarnDto
+import tk.tarajki.meme.dto.models.*
 import tk.tarajki.meme.dto.requests.BanRequest
 import tk.tarajki.meme.dto.requests.WarnRequest
-import tk.tarajki.meme.factories.BanDtoFactory
-import tk.tarajki.meme.factories.UserDtoFactory
-import tk.tarajki.meme.factories.WarnDtoFactory
+import tk.tarajki.meme.factories.*
 import tk.tarajki.meme.models.RoleName
-
 import tk.tarajki.meme.security.UserPrincipal
+import tk.tarajki.meme.services.CommentService
+import tk.tarajki.meme.services.PostService
 import tk.tarajki.meme.services.UserService
 import tk.tarajki.meme.util.Duration
 
@@ -27,8 +24,28 @@ import tk.tarajki.meme.util.Duration
 class UserController {
 
     @Autowired
-    lateinit var userService: UserService
+    private lateinit var userService: UserService
 
+    @Autowired
+    private lateinit var postService: PostService
+
+    @Autowired
+    private lateinit var commentService: CommentService
+
+    @Autowired
+    private lateinit var userDtoFactory: UserDtoFactory
+
+    @Autowired
+    private lateinit var banDtoFactory: BanDtoFactory
+
+    @Autowired
+    private lateinit var warnDtoFactory: WarnDtoFactory
+
+    @Autowired
+    private lateinit var commentDtoFactory: CommentDtoFactory
+
+    @Autowired
+    private lateinit var postDtoFactory: PostDtoFactory
 
     @GetMapping("/")
     fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {
@@ -38,7 +55,7 @@ class UserController {
                 principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
                 else -> UserDto::Basic
             }
-            UserDtoFactory.getUserDto(it, kind)
+            userDtoFactory.getUserDto(it, kind)
         }
     }
 
@@ -50,7 +67,7 @@ class UserController {
             principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
             else -> UserDto::Basic
         }
-        return UserDtoFactory.getUserDto(user, kind)
+        return userDtoFactory.getUserDto(user, kind)
     }
 
     @PostMapping("/{nickname}/bans")
@@ -68,7 +85,7 @@ class UserController {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         return userService.getUserBans(user)?.map {
-            BanDtoFactory.getBanDto(it, BanDto::Basic)
+            banDtoFactory.getBanDto(it, BanDto::Basic)
         }
     }
 
@@ -85,19 +102,34 @@ class UserController {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         return userService.getUserWarns(user)?.map {
-            WarnDtoFactory.getWarnDto(it, WarnDto::Basic)
+            warnDtoFactory.getWarnDto(it, WarnDto::Basic)
         }
     }
 
     @GetMapping("/{nickname}/posts")
-    fun getPosts(@PathVariable nickname: String) {
+    fun getPosts(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        val kind = when {
+            principal?.getRole() == RoleName.ROLE_ADMIN -> PostDto::Extended
+            else -> PostDto::Basic
+        }
+        return postService.getAllUserPost(user)?.map {
+            postDtoFactory.getPostDto(it, kind)
+        }
     }
 
     @GetMapping("/{nickname}/comments")
-    fun getComments(@PathVariable nickname: String) {
+    fun getComments(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        val kind = when {
+            principal?.getRole() == RoleName.ROLE_ADMIN -> CommentDto::Extended
+            else -> CommentDto::Basic
+        }
+
+        return commentService.getAllUserComments(user)?.map {
+            commentDtoFactory.getCommentDto(it, kind)
+        }
     }
 }

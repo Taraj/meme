@@ -24,7 +24,20 @@ data class Post(
 
         @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
-        val creator: User,
+        val author: User,
+
+        @JoinColumn
+        @ManyToOne(fetch = FetchType.LAZY)
+        val confirmedBy: User? = null,
+
+        @JoinColumn
+        @ManyToOne(fetch = FetchType.LAZY)
+        val deletedBy: User? = null,
+
+
+        @JoinColumn(name = "id")
+        @OneToMany(fetch = FetchType.LAZY)
+        val comments: List<Comment>?,
 
         @Column(nullable = false)
         val createdAt: Date = Date()

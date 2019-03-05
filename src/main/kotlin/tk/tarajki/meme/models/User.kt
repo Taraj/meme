@@ -1,7 +1,5 @@
 package tk.tarajki.meme.models
 
-import org.hibernate.annotations.LazyCollection
-import org.hibernate.annotations.LazyCollectionOption
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.Email
@@ -14,18 +12,15 @@ data class User(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-
         @NotBlank
         @Size(min = 3, max = 32)
         @Column(nullable = false, unique = true, length = 32)
         val username: String,
 
-
         @NotBlank
         @Size(min = 3, max = 32)
         @Column(nullable = false, length = 32)
         val avatarURL: String = "http://url.xy",
-
 
         @NotBlank
         @Size(min = 3, max = 32)
@@ -47,7 +42,6 @@ data class User(
 
         @JoinColumn(name = "target_id")
         @OneToMany(fetch = FetchType.EAGER)
-
         var bans: List<Ban>? = null,
 
         @JoinColumn(name = "target_id")
@@ -58,6 +52,9 @@ data class User(
         @OneToMany(fetch = FetchType.LAZY)
         var posts: List<Post>? = null,
 
+        @JoinColumn(name = "id")
+        @OneToMany(fetch = FetchType.LAZY)
+        var comments: List<Comment>? = null,
 
         @Column(nullable = false)
         var createdAt: Date = Date()

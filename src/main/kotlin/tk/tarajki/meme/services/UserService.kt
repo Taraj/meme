@@ -52,7 +52,6 @@ class UserService {
         return userRepository.findUserByUsername(username)
     }
 
-    @Transactional
     fun findUserByNickname(nickname: String): User? {
         return userRepository.findUserByNickname(nickname)
     }
@@ -69,7 +68,7 @@ class UserService {
         return user.warns
     }
 
-    @Transactional
+
     fun banUser(target: User, invoker: User, reason: String, duration: Duration): Ban {
         val ban = Ban(
                 reason = reason,

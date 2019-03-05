@@ -52,6 +52,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .antMatchers("/api/v1/users/*").permitAll()
                 .antMatchers("/api/v1/users/*/ban").hasAuthority(RoleName.ROLE_ADMIN.name)
                 .antMatchers("/api/v1/users/*/warn").hasAuthority(RoleName.ROLE_ADMIN.name)
+                .antMatchers("/api/v1/users/*/posts").permitAll()
+                .antMatchers("/api/v1/users/*/comments").permitAll()
 
                 .anyRequest().authenticated()
 
