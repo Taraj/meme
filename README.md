@@ -1,6 +1,6 @@
-#Meme
+# Meme
 Page with memes :)
-##Stack
+## Stack
 - Kotlin
 - Spring Boot
 - JWT
