@@ -35,9 +35,9 @@ data class Post(
         val deletedBy: User? = null,
 
 
-        @JoinColumn(name = "id")
+        @JoinColumn(name = "post_id")
         @OneToMany(fetch = FetchType.LAZY)
-        val comments: List<Comment>?,
+        val comments: List<Comment>? = null,
 
         @Column(nullable = false)
         val createdAt: Date = Date()

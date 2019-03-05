@@ -2,7 +2,6 @@ package tk.tarajki.meme.factories
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import tk.tarajki.meme.dto.models.CommentDto
 import tk.tarajki.meme.dto.models.PostDto
 import tk.tarajki.meme.dto.models.TagDto
 import tk.tarajki.meme.dto.models.UserDto
@@ -13,13 +12,11 @@ import kotlin.reflect.KFunction
 class PostDtoFactory {
 
     @Autowired
-    lateinit var userDtoFactory: UserDtoFactory
+    private lateinit var userDtoFactory: UserDtoFactory
 
     @Autowired
-    lateinit var tagDtoFactory: TagDtoFactory
+    private lateinit var tagDtoFactory: TagDtoFactory
 
-    @Autowired
-    lateinit var commentDtoFactory: CommentDtoFactory
 
     fun getPostDto(post: Post, kind: KFunction<PostDto>): PostDto {
         return when (kind) {
@@ -36,12 +33,10 @@ class PostDtoFactory {
                 title = post.title,
                 url = post.url,
                 tags = post.tags.map {
-                   tagDtoFactory.getTagDto(it, TagDto::Basic)
+                    tagDtoFactory.getTagDto(it, TagDto::Basic)
                 },
                 author = userDtoFactory.getUserDto(post.author, UserDto::Basic),
-                comments = post.comments?.map {
-                    commentDtoFactory.getCommentDto(it, CommentDto::Basic)
-                },
+                commentsCount = post.comments?.size ?: 0,
                 createdAt = post.createdAt
         )
     }
@@ -66,9 +61,7 @@ class PostDtoFactory {
                 } else {
                     null
                 },
-                comments = post.comments?.map {
-                    commentDtoFactory.getCommentDto(it, CommentDto::Extended)
-                },
+                commentsCount = post.comments?.size ?: 0,
                 createdAt = post.createdAt
         )
     }

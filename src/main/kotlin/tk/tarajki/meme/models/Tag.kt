@@ -16,6 +16,6 @@ data class Tag(
         val name: String,
 
         @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-        val posts: List<Post>?
+        val posts: List<Post>? = null
 
 )

@@ -6,17 +6,14 @@ import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.LoginRequest
 import tk.tarajki.meme.dto.requests.RegisterRequest
 import tk.tarajki.meme.exceptions.UserRegisterException
-import tk.tarajki.meme.repositories.RoleRepository
-import tk.tarajki.meme.repositories.UserRepository
 
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.models.*
+import tk.tarajki.meme.repositories.*
 
-import tk.tarajki.meme.repositories.BanRepository
-import tk.tarajki.meme.repositories.WarnRepository
 import tk.tarajki.meme.security.JwtTokenProvider
 import tk.tarajki.meme.util.Duration
 
@@ -48,6 +45,7 @@ class UserService {
     @Autowired
     private lateinit var warnRepository: WarnRepository
 
+
     fun findUserByUsername(username: String): User? {
         return userRepository.findUserByUsername(username)
     }
@@ -59,15 +57,6 @@ class UserService {
     fun findAll(): List<User>? {
         return userRepository.findAll()
     }
-
-    fun getUserBans(user: User): List<Ban>? {
-        return user.bans
-    }
-
-    fun getUserWarns(user: User): List<Warn>? {
-        return user.warns
-    }
-
 
     fun banUser(target: User, invoker: User, reason: String, duration: Duration): Ban {
         val ban = Ban(
@@ -87,7 +76,6 @@ class UserService {
         )
         return warnRepository.save(warn)
     }
-
 
     @Transactional
     fun register(registerRequest: RegisterRequest): User? {
@@ -117,7 +105,6 @@ class UserService {
 
     }
 
-
     private fun isUniqueUserRegisterDto(registerRequest: RegisterRequest): Boolean {
 
         if (!isUniqueEmail(registerRequest.email)) {
@@ -135,16 +122,13 @@ class UserService {
         return true
     }
 
-
     private fun isUniqueEmail(email: String): Boolean {
         return userRepository.findUserByEmail(email) == null
     }
 
-
     fun isUniqueNickname(nickname: String): Boolean {
         return userRepository.findUserByNickname(nickname) == null
     }
-
 
     private fun isUniqueUsername(username: String): Boolean {
         return userRepository.findUserByUsername(username) == null

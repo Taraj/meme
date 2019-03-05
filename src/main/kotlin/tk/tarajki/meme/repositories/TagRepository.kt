@@ -2,7 +2,10 @@ package tk.tarajki.meme.repositories
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import tk.tarajki.meme.models.Warn
+import tk.tarajki.meme.models.Tag
+
 
 @Repository
-interface WarnRepository : JpaRepository<Warn, Long>
+interface TagRepository : JpaRepository<Tag, Long> {
+    fun getTagByName(name: String): Tag?
+}

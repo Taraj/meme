@@ -6,11 +6,12 @@ import tk.tarajki.meme.dto.models.BanDto
 import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.models.Ban
 import kotlin.reflect.KFunction
+
 @Component
 class BanDtoFactory {
 
     @Autowired
-    lateinit var userDtoFactory: UserDtoFactory
+    private lateinit var userDtoFactory: UserDtoFactory
 
     fun getBanDto(ban: Ban, kind: KFunction<BanDto>): BanDto {
         return when (kind) {

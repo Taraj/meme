@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.models.User
-import tk.tarajki.meme.repositories.UserRepository
+import tk.tarajki.meme.services.UserService
 import java.util.*
 import kotlin.reflect.KFunction
 
@@ -13,10 +13,11 @@ import kotlin.reflect.KFunction
 class UserDtoFactory {
 
     @Autowired
-    lateinit var userRepository:UserRepository
+    private lateinit var userService: UserService
+
 
     fun getUserDto(user: User, kind: KFunction<UserDto>): UserDto {
-        println(userRepository.count())
+
         return when (kind) {
             UserDto::Basic -> getBasicUserDto(user)
             UserDto::Extended -> getExtendedUserDto(user)
@@ -31,8 +32,8 @@ class UserDtoFactory {
                 avatar = user.avatarURL,
                 isBaned = isBaned(user),
                 joinedAt = user.createdAt,
-                commentsCount = 0,
-                postsCount = 0
+                commentsCount = user.comments?.size ?: 0,
+                postsCount = user.posts?.size ?: 0
 
         )
     }
@@ -46,8 +47,8 @@ class UserDtoFactory {
                 avatar = user.avatarURL,
                 isBaned = isBaned(user),
                 joinedAt = user.createdAt,
-                commentsCount = 0,
-                postsCount = 0
+                commentsCount = user.comments?.size ?: 0,
+                postsCount = user.posts?.size ?: 0
         )
     }
 

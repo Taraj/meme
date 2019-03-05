@@ -13,8 +13,6 @@ import tk.tarajki.meme.dto.requests.WarnRequest
 import tk.tarajki.meme.factories.*
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
-import tk.tarajki.meme.services.CommentService
-import tk.tarajki.meme.services.PostService
 import tk.tarajki.meme.services.UserService
 import tk.tarajki.meme.util.Duration
 
@@ -25,12 +23,6 @@ class UserController {
 
     @Autowired
     private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var postService: PostService
-
-    @Autowired
-    private lateinit var commentService: CommentService
 
     @Autowired
     private lateinit var userDtoFactory: UserDtoFactory
@@ -50,7 +42,6 @@ class UserController {
     @GetMapping("/")
     fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {
         return userService.findAll()?.map {
-
             val kind = when {
                 principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
                 else -> UserDto::Basic
@@ -79,12 +70,11 @@ class UserController {
         return ResponseEntity(HttpStatus.CREATED)
     }
 
-
     @GetMapping("/{nickname}/bans")
     fun getBans(@PathVariable nickname: String): List<BanDto>? {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        return userService.getUserBans(user)?.map {
+        return user.bans?.map {
             banDtoFactory.getBanDto(it, BanDto::Basic)
         }
     }
@@ -101,7 +91,7 @@ class UserController {
     fun getWarns(@PathVariable nickname: String): List<WarnDto>? {
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        return userService.getUserWarns(user)?.map {
+        return user.warns?.map {
             warnDtoFactory.getWarnDto(it, WarnDto::Basic)
         }
     }
@@ -114,7 +104,7 @@ class UserController {
             principal?.getRole() == RoleName.ROLE_ADMIN -> PostDto::Extended
             else -> PostDto::Basic
         }
-        return postService.getAllUserPost(user)?.map {
+        return user.posts?.map {
             postDtoFactory.getPostDto(it, kind)
         }
     }
@@ -127,8 +117,7 @@ class UserController {
             principal?.getRole() == RoleName.ROLE_ADMIN -> CommentDto::Extended
             else -> CommentDto::Basic
         }
-
-        return commentService.getAllUserComments(user)?.map {
+        return user.comments?.map {
             commentDtoFactory.getCommentDto(it, kind)
         }
     }

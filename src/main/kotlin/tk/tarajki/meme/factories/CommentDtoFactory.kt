@@ -13,10 +13,10 @@ import kotlin.reflect.KFunction
 class CommentDtoFactory {
 
     @Autowired
-    lateinit var userDtoFactory: UserDtoFactory
+    private lateinit var userDtoFactory: UserDtoFactory
 
     @Autowired
-    lateinit var postDtoFactory: PostDtoFactory
+    private lateinit var postDtoFactory: PostDtoFactory
 
 
     fun getCommentDto(comment: Comment, kind: KFunction<CommentDto>): CommentDto {

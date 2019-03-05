@@ -3,6 +3,7 @@ package tk.tarajki.meme.config
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -49,11 +50,16 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http.authorizeRequests()
                 .antMatchers("/api/v1/auth/*").permitAll()
                 .antMatchers("/error").permitAll()
+
                 .antMatchers("/api/v1/users/*").permitAll()
                 .antMatchers("/api/v1/users/*/ban").hasAuthority(RoleName.ROLE_ADMIN.name)
                 .antMatchers("/api/v1/users/*/warn").hasAuthority(RoleName.ROLE_ADMIN.name)
                 .antMatchers("/api/v1/users/*/posts").permitAll()
                 .antMatchers("/api/v1/users/*/comments").permitAll()
+
+                .antMatchers(HttpMethod.GET,"/api/v1/posts/*").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/posts/*/comments").permitAll()
+
 
                 .anyRequest().authenticated()
 

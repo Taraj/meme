@@ -48,11 +48,11 @@ data class User(
         @OneToMany(fetch = FetchType.LAZY)
         var warns: List<Warn>? = null,
 
-        @JoinColumn(name = "id")
+        @JoinColumn(name = "author_id")
         @OneToMany(fetch = FetchType.LAZY)
         var posts: List<Post>? = null,
 
-        @JoinColumn(name = "id")
+        @JoinColumn(name = "author_id")
         @OneToMany(fetch = FetchType.LAZY)
         var comments: List<Comment>? = null,
 

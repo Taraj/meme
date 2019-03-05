@@ -7,11 +7,12 @@ import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.dto.models.WarnDto
 import tk.tarajki.meme.models.Warn
 import kotlin.reflect.KFunction
+
 @Component
 class WarnDtoFactory {
 
     @Autowired
-    lateinit var userDtoFactory: UserDtoFactory
+    private lateinit var userDtoFactory: UserDtoFactory
 
     fun getWarnDto(warn: Warn, kind: KFunction<WarnDto>): WarnDto {
         return when (kind) {

@@ -2,8 +2,9 @@ package tk.tarajki.meme.dto.requests
 
 import javax.validation.constraints.NotBlank
 
-data class WarnRequest(
+data class CommentRequest(
 
         @NotBlank
-        val reason: String
+        val content: String
+
 )
