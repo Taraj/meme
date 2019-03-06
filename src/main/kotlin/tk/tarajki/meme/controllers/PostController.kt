@@ -25,7 +25,7 @@ class PostController(
 ) {
 
 
-    @GetMapping("/")
+    @GetMapping("/", "")
     fun getAllPosts(@AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
         return postService.findAll()?.map {
             val kind = when {

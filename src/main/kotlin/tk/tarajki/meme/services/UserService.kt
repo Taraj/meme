@@ -18,13 +18,13 @@ import java.time.LocalDateTime
 
 @Service
 class UserService(
-        val userRepository: UserRepository,
-        val roleRepository: RoleRepository,
-        val bCryptPasswordEncoder: BCryptPasswordEncoder,
-        @Lazy val authenticationManager: AuthenticationManager,
-        val jwtTokenProvider: JwtTokenProvider,
-        val banRepository: BanRepository,
-        val warnRepository: WarnRepository
+        private val userRepository: UserRepository,
+        private val roleRepository: RoleRepository,
+        private val bCryptPasswordEncoder: BCryptPasswordEncoder,
+        @Lazy private val authenticationManager: AuthenticationManager,
+        private val jwtTokenProvider: JwtTokenProvider,
+        private val banRepository: BanRepository,
+        private val warnRepository: WarnRepository
 ) {
 
 
@@ -74,7 +74,6 @@ class UserService(
                 email = registerRequest.email,
                 password = bCryptPasswordEncoder.encode(registerRequest.password),
                 role = role
-
         )
 
         return userRepository.save(user)

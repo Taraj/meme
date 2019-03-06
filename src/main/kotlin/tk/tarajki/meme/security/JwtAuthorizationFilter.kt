@@ -42,6 +42,12 @@ class JwtAuthorizationFilter(
                 return
             }
 
+            if(!userDetails.isAccountNonLocked){
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Your account is baned.")
+                return
+            }
+
+
             val authentication = TokenBasedAuthentication(userDetails, token)
             SecurityContextHolder.getContext().authentication = authentication
 

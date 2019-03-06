@@ -9,11 +9,12 @@ import tk.tarajki.meme.security.UserPrincipal
 
 @Service
 class UserDetailsServiceImpl(
-        val userService: UserService
+        private val userService: UserService
 ) : UserDetailsService {
 
 
     override fun loadUserByUsername(username: String): UserDetails {
+
         val user = userService.findUserByUsername(username) ?: throw UsernameNotFoundException(username)
 
         return UserPrincipal(user)

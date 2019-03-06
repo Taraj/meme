@@ -40,12 +40,11 @@ class WebSecurityConfig(
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         http.authorizeRequests()
-                .antMatchers("/api/v1/auth/*").permitAll()
                 .antMatchers("/error").permitAll()
 
                 .antMatchers("/api/v1/users/*").permitAll()
-                .antMatchers("/api/v1/users/*/ban").hasAuthority(RoleName.ROLE_ADMIN.name)
-                .antMatchers("/api/v1/users/*/warn").hasAuthority(RoleName.ROLE_ADMIN.name)
+                .antMatchers("/api/v1/users/*/bans").hasAuthority(RoleName.ROLE_ADMIN.name)
+                .antMatchers("/api/v1/users/*/warns").hasAuthority(RoleName.ROLE_ADMIN.name)
                 .antMatchers("/api/v1/users/*/posts").permitAll()
                 .antMatchers("/api/v1/users/*/comments").permitAll()
 

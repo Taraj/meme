@@ -26,7 +26,7 @@ class UserController(
 ) {
 
 
-    @GetMapping("/")
+    @GetMapping("/", "")
     fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {
         return userService.findAll()?.map {
             val kind = when {
