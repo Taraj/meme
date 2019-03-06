@@ -1,5 +1,6 @@
 package tk.tarajki.meme.dto.models
 
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -9,7 +10,7 @@ sealed class UserDto {
             val nickname: String,
             val avatar: String,
             val isBaned: Boolean,
-            val joinedAt: Date,
+            val joinedAt: LocalDateTime,
             val commentsCount: Int,
             val postsCount: Int
     ) : UserDto()
@@ -21,7 +22,7 @@ sealed class UserDto {
             val email: String,
             val avatar: String,
             val isBaned: Boolean,
-            val joinedAt: Date,
+            val joinedAt: LocalDateTime,
             val commentsCount: Int,
             val postsCount: Int
     ) : UserDto()

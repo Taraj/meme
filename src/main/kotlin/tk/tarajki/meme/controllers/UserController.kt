@@ -12,7 +12,6 @@ import tk.tarajki.meme.factories.*
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.UserService
-import tk.tarajki.meme.util.Duration
 
 
 @RestController
@@ -54,7 +53,7 @@ class UserController(
         val user = userService.findUserByNickname(nickname)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
 
-        userService.banUser(user, principal.user, banRequest.reason, Duration(banRequest.durationInHours))
+        userService.banUser(user, principal.user, banRequest.reason, banRequest.durationInHours)
         return ResponseEntity(HttpStatus.CREATED)
     }
 

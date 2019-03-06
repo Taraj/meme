@@ -47,7 +47,7 @@ class PostController(
         return postDtoFactory.getPostDto(post, kind)
     }
 
-    @Transactional
+
     @GetMapping("/{id}/comments")
     fun getPostComments(@PathVariable id: Long, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
         val post = postService.findPostById(id)

@@ -1,6 +1,7 @@
 package tk.tarajki.meme.models
 
 
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 
@@ -40,5 +41,5 @@ data class Post(
         val comments: List<Comment>? = null,
 
         @Column(nullable = false)
-        val createdAt: Date = Date()
+        val createdAt: LocalDateTime = LocalDateTime.now()
 )

@@ -12,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
 import tk.tarajki.meme.security.JwtTokenProvider
-import tk.tarajki.meme.util.Duration
-
-import java.util.*
+import java.time.LocalDateTime
 
 
 @Service
@@ -41,10 +39,11 @@ class UserService(
         return userRepository.findAll()
     }
 
-    fun banUser(target: User, invoker: User, reason: String, duration: Duration): Ban {
+    fun banUser(target: User, invoker: User, reason: String, durationInHours: Long): Ban {
+
         val ban = Ban(
                 reason = reason,
-                expireAt = duration + Date(),
+                expireAt = LocalDateTime.now().plusHours(durationInHours),
                 target = target,
                 invoker = invoker
         )

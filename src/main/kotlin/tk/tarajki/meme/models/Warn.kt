@@ -1,6 +1,7 @@
 package tk.tarajki.meme.models
 
 import org.springframework.format.annotation.DateTimeFormat
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -13,7 +14,7 @@ data class Warn(
 
         @Column
         @DateTimeFormat
-        val readAt: Date? = null,
+        val readAt: LocalDateTime? = null,
 
         @NotBlank
         @Column(nullable = false)
@@ -27,6 +28,6 @@ data class Warn(
 
         @DateTimeFormat
         @Column(nullable = false)
-        var createdAt: Date = Date()
+        var createdAt: LocalDateTime = LocalDateTime.now()
 
 )

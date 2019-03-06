@@ -5,6 +5,7 @@ package tk.tarajki.meme.factories
 import org.springframework.stereotype.Component
 import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.models.User
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.reflect.KFunction
 
@@ -50,7 +51,7 @@ class UserDtoFactory {
 
     private fun isBaned(user: User): Boolean {
         return user.bans?.any {
-            it.expireAt > Date()
+            it.expireAt > LocalDateTime.now()
         } ?: false
 
     }

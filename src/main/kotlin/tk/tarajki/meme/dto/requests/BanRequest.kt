@@ -7,5 +7,5 @@ data class BanRequest(
         val reason: String,
 
         @NotBlank
-        val durationInHours: Double
+        val durationInHours: Long
 )

@@ -1,7 +1,7 @@
 package tk.tarajki.meme.models
 
 import org.springframework.format.annotation.DateTimeFormat
-import java.util.*
+import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.Future
 import javax.validation.constraints.NotBlank
@@ -15,7 +15,7 @@ data class Ban(
         @Future
         @DateTimeFormat
         @Column(nullable = false)
-        val expireAt: Date,
+        val expireAt: LocalDateTime,
 
         @NotBlank
         @Column(nullable = false)
@@ -29,5 +29,5 @@ data class Ban(
 
         @DateTimeFormat
         @Column(nullable = false)
-        var createdAt: Date = Date()
+        var createdAt: LocalDateTime = LocalDateTime.now()
 )

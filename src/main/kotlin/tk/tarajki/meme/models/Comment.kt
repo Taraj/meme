@@ -1,7 +1,7 @@
 package tk.tarajki.meme.models
 
 import org.springframework.format.annotation.DateTimeFormat
-import java.util.*
+import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
@@ -27,5 +27,5 @@ data class Comment(
 
         @DateTimeFormat
         @Column(nullable = false)
-        var createdAt: Date = Date()
+        var createdAt: LocalDateTime = LocalDateTime.now()
 )

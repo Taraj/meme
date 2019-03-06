@@ -1,7 +1,7 @@
 package tk.tarajki.meme.models
 
 
-import java.util.*
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -22,5 +22,5 @@ data class Role(
 
 
         @Column(nullable = false)
-        var createdAt: Date = Date()
+        var createdAt: LocalDateTime = LocalDateTime.now()
 )

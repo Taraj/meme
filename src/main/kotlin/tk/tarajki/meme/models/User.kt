@@ -1,5 +1,6 @@
 package tk.tarajki.meme.models
 
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.Email
@@ -57,5 +58,5 @@ data class User(
         var comments: List<Comment>? = null,
 
         @Column(nullable = false)
-        var createdAt: Date = Date()
+        var createdAt: LocalDateTime = LocalDateTime.now()
 )

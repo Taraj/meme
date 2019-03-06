@@ -1,5 +1,6 @@
 package tk.tarajki.meme.dto.models
 
+import java.time.LocalDateTime
 import java.util.*
 
 sealed class CommentDto {
@@ -9,7 +10,7 @@ sealed class CommentDto {
             val content: String,
             val post: PostDto,
             var author: UserDto,
-            var createdAt: Date
+            var createdAt: LocalDateTime
     ) : CommentDto()
 
     data class Extended(
@@ -18,6 +19,6 @@ sealed class CommentDto {
             val post: PostDto,
             var author: UserDto,
             var deletedBy: UserDto?,
-            var createdAt: Date
+            var createdAt: LocalDateTime
     ) : CommentDto()
 }
