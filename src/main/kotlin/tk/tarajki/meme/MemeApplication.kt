@@ -17,10 +17,7 @@ class MemeApplication {
         return BCryptPasswordEncoder()
     }
 
-    @Bean
-    fun userDetailsService(): UserDetailsService {
-        return UserDetailsServiceImpl()
-    }
+
 
 }
 

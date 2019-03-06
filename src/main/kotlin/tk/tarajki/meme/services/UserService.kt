@@ -1,5 +1,6 @@
 package tk.tarajki.meme.services
 
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.LoginRequest
@@ -21,7 +22,7 @@ class UserService(
         val userRepository: UserRepository,
         val roleRepository: RoleRepository,
         val bCryptPasswordEncoder: BCryptPasswordEncoder,
-        val authenticationManager: AuthenticationManager,
+        @Lazy val authenticationManager: AuthenticationManager,
         val jwtTokenProvider: JwtTokenProvider,
         val banRepository: BanRepository,
         val warnRepository: WarnRepository
