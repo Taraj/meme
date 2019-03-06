@@ -7,6 +7,7 @@ plugins {
 
 apply plugin: 'kotlin-jpa'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'java'
 
 group = 'tk.tarajki'
 version = '0.0.1-SNAPSHOT'
