@@ -1,5 +1,8 @@
 package tk.tarajki.meme.dto.models
 
+import tk.tarajki.meme.models.Post
+import tk.tarajki.meme.models.Tag
+import tk.tarajki.meme.models.User
 import java.time.LocalDateTime
 import java.util.*
 
@@ -14,7 +17,19 @@ sealed class PostDto {
             val author: UserDto,
             val commentsCount: Int,
             val createdAt: LocalDateTime
-    ) : PostDto()
+    ) : PostDto() {
+        constructor(post: Post) : this(
+                id = post.id,
+                title = post.title,
+                url = post.url,
+                tags = post.tags.map {
+                    TagDto.Basic(it)
+                },
+                author = UserDto.Basic(post.author),
+                commentsCount = post.comments?.size ?: 0,
+                createdAt = post.createdAt
+        )
+    }
 
     data class Extended(
             val id: Long,
@@ -22,11 +37,28 @@ sealed class PostDto {
             val url: String,
             val tags: List<TagDto>,
             val author: UserDto,
-            var confirmedBy: UserDto?,
-            var deletedBy: UserDto?,
+            val confirmedBy: UserDto?,
+            val deletedBy: UserDto?,
             val commentsCount: Int,
             val createdAt: LocalDateTime
-    ) : PostDto()
-
+    ) : PostDto() {
+        constructor(post: Post) : this(
+                id = post.id,
+                title = post.title,
+                url = post.url,
+                tags = post.tags.map {
+                    TagDto.Basic(it)
+                },
+                author = UserDto.Extended(post.author),
+                confirmedBy = post.confirmedBy?.let {
+                    UserDto.Extended(it)
+                },
+                deletedBy = post.deletedBy?.let {
+                    UserDto.Extended(it)
+                },
+                commentsCount = post.comments?.size ?: 0,
+                createdAt = post.createdAt
+        )
+    }
 }
 

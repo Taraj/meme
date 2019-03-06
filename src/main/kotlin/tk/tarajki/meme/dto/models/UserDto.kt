@@ -1,8 +1,7 @@
 package tk.tarajki.meme.dto.models
 
+import tk.tarajki.meme.models.User
 import java.time.LocalDateTime
-import java.util.*
-
 
 sealed class UserDto {
 
@@ -13,7 +12,18 @@ sealed class UserDto {
             val joinedAt: LocalDateTime,
             val commentsCount: Int,
             val postsCount: Int
-    ) : UserDto()
+    ) : UserDto() {
+        constructor(user: User) : this(
+                nickname = user.nickname,
+                avatar = user.avatarURL,
+                isBaned = user.bans?.any {
+                    it.expireAt > LocalDateTime.now()
+                } ?: false,
+                joinedAt = user.createdAt,
+                commentsCount = user.comments?.size ?: 0,
+                postsCount = user.posts?.size ?: 0
+        )
+    }
 
     data class Extended(
             val id: Long,
@@ -25,7 +35,21 @@ sealed class UserDto {
             val joinedAt: LocalDateTime,
             val commentsCount: Int,
             val postsCount: Int
-    ) : UserDto()
+    ) : UserDto() {
+        constructor(user: User) : this(
+                id = user.id,
+                username = user.username,
+                nickname = user.nickname,
+                email = user.email,
+                avatar = user.avatarURL,
+                isBaned = user.bans?.any {
+                    it.expireAt > LocalDateTime.now()
+                } ?: false,
+                joinedAt = user.createdAt,
+                commentsCount = user.comments?.size ?: 0,
+                postsCount = user.posts?.size ?: 0
+        )
+    }
 
 }
 

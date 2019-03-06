@@ -1,7 +1,7 @@
 package tk.tarajki.meme.dto.models
 
+import tk.tarajki.meme.models.Ban
 import java.time.LocalDateTime
-import java.util.*
 
 
 sealed class BanDto {
@@ -11,9 +11,18 @@ sealed class BanDto {
             val expireAt: LocalDateTime,
             val reason: String,
             val target: UserDto,
-            var invoker: UserDto,
-            var createdAt: LocalDateTime
-    ) : BanDto()
+            val invoker: UserDto,
+            val createdAt: LocalDateTime
+    ) : BanDto() {
+        constructor(ban: Ban) : this(
+                id = ban.id,
+                expireAt = ban.expireAt,
+                reason = ban.reason,
+                target = UserDto.Extended(ban.target),
+                invoker = UserDto.Extended(ban.invoker),
+                createdAt = ban.createdAt
+        )
+    }
 
 }
 

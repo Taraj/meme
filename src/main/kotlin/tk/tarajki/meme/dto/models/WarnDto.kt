@@ -1,7 +1,7 @@
 package tk.tarajki.meme.dto.models
 
+import tk.tarajki.meme.models.Warn
 import java.time.LocalDateTime
-import java.util.*
 
 
 sealed class WarnDto {
@@ -11,8 +11,17 @@ sealed class WarnDto {
             val readAt: LocalDateTime?,
             val reason: String,
             val target: UserDto,
-            var invoker: UserDto,
-            var createdAt: LocalDateTime
-    ) : WarnDto()
+            val invoker: UserDto,
+            val createdAt: LocalDateTime
+    ) : WarnDto() {
+        constructor(warn: Warn) : this(
+                id = warn.id,
+                reason = warn.reason,
+                readAt = warn.readAt,
+                target = UserDto.Extended(warn.target),
+                invoker = UserDto.Extended(warn.invoker),
+                createdAt = warn.createdAt
+        )
+    }
 
 }

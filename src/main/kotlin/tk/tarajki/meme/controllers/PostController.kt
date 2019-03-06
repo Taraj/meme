@@ -9,8 +9,6 @@ import tk.tarajki.meme.dto.models.PostDto
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.PostRequest
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
-import tk.tarajki.meme.factories.CommentDtoFactory
-import tk.tarajki.meme.factories.PostDtoFactory
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.PostService
@@ -18,9 +16,7 @@ import tk.tarajki.meme.services.PostService
 @RestController
 @RequestMapping("/api/v1/posts")
 class PostController(
-        private val postService: PostService,
-        private val postDtoFactory: PostDtoFactory,
-        private val commentDtoFactory: CommentDtoFactory
+        private val postService: PostService
 ) {
 
 
@@ -29,12 +25,12 @@ class PostController(
         val posts = postService.findAll()
         return when (principal?.getRole()) {
             RoleName.ROLE_ADMIN -> posts?.map {
-                postDtoFactory.getPostDto(it, PostDto::Extended)
+                PostDto.Extended(it)
             }
             else -> posts?.filter {
                 it.deletedBy == null
             }?.map {
-                postDtoFactory.getPostDto(it, PostDto::Basic)
+                PostDto.Basic(it)
             }
         }
     }
@@ -43,9 +39,9 @@ class PostController(
     fun getPostById(@PathVariable id: Long, @AuthenticationPrincipal principal: UserPrincipal?): PostDto? {
         val post = postService.findPostById(id)
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postDtoFactory.getPostDto(post, PostDto::Extended)
+            RoleName.ROLE_ADMIN -> PostDto.Extended(post)
             else -> if (post.deletedBy == null) {
-                postDtoFactory.getPostDto(post, PostDto::Basic)
+                PostDto.Basic(post)
             } else {
                 throw ResourceNotFoundException("Post deleted.")
             }
@@ -71,12 +67,12 @@ class PostController(
         val post = postService.findPostById(id)
         return when (principal?.getRole()) {
             RoleName.ROLE_ADMIN -> post.comments?.map {
-                commentDtoFactory.getCommentDto(it, CommentDto::Extended)
+                CommentDto.Extended(it)
             }
             else -> post.comments?.filter {
                 it.deletedBy == null
             }?.map {
-                commentDtoFactory.getCommentDto(it, CommentDto::Basic)
+                CommentDto.Basic(it)
             }
         }
     }

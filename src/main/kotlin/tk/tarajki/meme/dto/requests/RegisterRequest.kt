@@ -1,13 +1,15 @@
 package tk.tarajki.meme.dto.requests
 
-import javax.validation.constraints.Email
+
+import tk.tarajki.meme.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
 data class RegisterRequest(
 
-        @NotBlank
-        @Size(min = 3, max = 32)
+
+        @get:NotBlank
+        @get:Size(min = 3, max = 32)
         val nickname: String,
 
         @NotBlank
