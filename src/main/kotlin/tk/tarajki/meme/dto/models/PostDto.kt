@@ -22,8 +22,8 @@ sealed class PostDto {
             val url: String,
             val tags: List<TagDto>,
             val author: UserDto,
-            val confirmedBy: UserDto?,
-            val deletedBy: UserDto?,
+            var confirmedBy: UserDto?,
+            var deletedBy: UserDto?,
             val commentsCount: Int,
             val createdAt: LocalDateTime
     ) : PostDto()

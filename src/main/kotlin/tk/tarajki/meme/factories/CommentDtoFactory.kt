@@ -40,10 +40,8 @@ class CommentDtoFactory(
                 content = comment.content,
                 post = postDtoFactory.getPostDto(comment.post, PostDto::Basic),
                 author = userDtoFactory.getUserDto(comment.author, UserDto::Basic),
-                deletedBy = if (comment.deletedBy != null) {
-                    userDtoFactory.getUserDto(comment.deletedBy, UserDto::Extended)
-                } else {
-                    null
+                deletedBy = comment.deletedBy?.let {
+                    userDtoFactory.getUserDto(it, UserDto::Extended)
                 },
                 createdAt = comment.createdAt
         )

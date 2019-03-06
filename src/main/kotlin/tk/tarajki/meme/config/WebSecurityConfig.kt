@@ -48,9 +48,11 @@ class WebSecurityConfig(
                 .antMatchers("/api/v1/users/*/posts").permitAll()
                 .antMatchers("/api/v1/users/*/comments").permitAll()
 
+                .antMatchers(HttpMethod.GET, "/api/v1/posts").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/*/comments").permitAll()
-
+                .antMatchers(HttpMethod.DELETE, "/api/v1/posts/*").hasAuthority(RoleName.ROLE_ADMIN.name)
+                .antMatchers(HttpMethod.PUT, "/api/v1/posts/*").hasAuthority(RoleName.ROLE_ADMIN.name)
 
                 .anyRequest().authenticated()
 

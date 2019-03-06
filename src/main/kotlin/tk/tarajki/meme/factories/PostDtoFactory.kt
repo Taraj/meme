@@ -48,18 +48,15 @@ class PostDtoFactory(
                     tagDtoFactory.getTagDto(it, TagDto::Basic)
                 },
                 author = userDtoFactory.getUserDto(post.author, UserDto::Extended),
-                confirmedBy = if (post.confirmedBy != null) {
-                    userDtoFactory.getUserDto(post.confirmedBy, UserDto::Extended)
-                } else {
-                    null
+                confirmedBy = post.confirmedBy?.let {
+                    userDtoFactory.getUserDto(it, UserDto::Extended)
                 },
-                deletedBy = if (post.deletedBy != null) {
-                    userDtoFactory.getUserDto(post.deletedBy, UserDto::Extended)
-                } else {
-                    null
+                deletedBy = post.deletedBy?.let {
+                    userDtoFactory.getUserDto(it, UserDto::Extended)
                 },
                 commentsCount = post.comments?.size ?: 0,
                 createdAt = post.createdAt
         )
+
     }
 }

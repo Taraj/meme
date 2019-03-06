@@ -1,5 +1,6 @@
 package tk.tarajki.meme.services
 
+import org.hibernate.Session
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.PostRequest
@@ -23,6 +24,17 @@ class PostService(
     fun findAll(): List<Post>? {
         return postRepository.findAll()
 
+    }
+
+    fun delete(post: Post, user: User): Post {
+        post.deletedBy = user
+
+        return postRepository.save(post)
+    }
+
+    fun accept(post: Post, user: User): Post {
+        post.confirmedBy = user
+        return postRepository.save(post)
     }
 
     fun findPostById(id: Long): Post {

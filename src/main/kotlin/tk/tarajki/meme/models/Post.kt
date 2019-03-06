@@ -29,11 +29,11 @@ data class Post(
 
         @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
-        val confirmedBy: User? = null,
+        var confirmedBy: User? = null,
 
         @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
-        val deletedBy: User? = null,
+        var deletedBy: User? = null,
 
 
         @JoinColumn(name = "post_id")

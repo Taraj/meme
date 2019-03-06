@@ -8,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException
 import tk.tarajki.meme.dto.models.*
 import tk.tarajki.meme.dto.requests.BanRequest
 import tk.tarajki.meme.dto.requests.WarnRequest
+import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.factories.*
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
@@ -29,8 +30,8 @@ class UserController(
     @GetMapping("/", "")
     fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {
         return userService.findAll()?.map {
-            val kind = when {
-                principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
+            val kind = when (principal?.getRole()) {
+                RoleName.ROLE_ADMIN -> UserDto::Extended
                 else -> UserDto::Basic
             }
             userDtoFactory.getUserDto(it, kind)
@@ -40,8 +41,8 @@ class UserController(
     @GetMapping("/{nickname}")
     fun getUserByNickname(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): UserDto? {
         val user = userService.findUserByNickname(nickname)
-        val kind = when {
-            principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
+        val kind = when (principal?.getRole()) {
+            RoleName.ROLE_ADMIN -> UserDto::Extended
             else -> UserDto::Basic
         }
         return userDtoFactory.getUserDto(user, kind)
@@ -80,24 +81,30 @@ class UserController(
     @GetMapping("/{nickname}/posts")
     fun getPosts(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
         val user = userService.findUserByNickname(nickname)
-        val kind = when {
-            principal?.getRole() == RoleName.ROLE_ADMIN -> PostDto::Extended
-            else -> PostDto::Basic
-        }
-        return user.posts?.map {
-            postDtoFactory.getPostDto(it, kind)
+        return when (principal?.getRole()) {
+            RoleName.ROLE_ADMIN -> user.posts?.map {
+                postDtoFactory.getPostDto(it, PostDto::Extended)
+            }
+            else -> user.posts?.filter {
+                it.deletedBy == null
+            }?.map {
+                postDtoFactory.getPostDto(it, PostDto::Basic)
+            }
         }
     }
 
     @GetMapping("/{nickname}/comments")
     fun getComments(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
         val user = userService.findUserByNickname(nickname)
-        val kind = when {
-            principal?.getRole() == RoleName.ROLE_ADMIN -> CommentDto::Extended
-            else -> CommentDto::Basic
-        }
-        return user.comments?.map {
-            commentDtoFactory.getCommentDto(it, kind)
+        return when (principal?.getRole()) {
+            RoleName.ROLE_ADMIN -> user.comments?.map {
+                commentDtoFactory.getCommentDto(it, CommentDto::Extended)
+            }
+            else -> user.comments?.filter {
+                it.deletedBy == null
+            }?.map {
+                commentDtoFactory.getCommentDto(it, CommentDto::Basic)
+            }
         }
     }
 }
