@@ -10,13 +10,10 @@ import tk.tarajki.meme.models.Comment
 import kotlin.reflect.KFunction
 
 @Component
-class CommentDtoFactory {
-
-    @Autowired
-    private lateinit var userDtoFactory: UserDtoFactory
-
-    @Autowired
-    private lateinit var postDtoFactory: PostDtoFactory
+class CommentDtoFactory(
+        val userDtoFactory: UserDtoFactory,
+        val postDtoFactory: PostDtoFactory
+) {
 
 
     fun getCommentDto(comment: Comment, kind: KFunction<CommentDto>): CommentDto {

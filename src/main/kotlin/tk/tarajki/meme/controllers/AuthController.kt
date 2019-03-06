@@ -1,6 +1,5 @@
 package tk.tarajki.meme.controllers
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
@@ -17,10 +16,9 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthController {
-
-    @Autowired
-    private lateinit var userService: UserService
+class AuthController(
+        val userService: UserService
+) {
 
 
     @PostMapping("/login")

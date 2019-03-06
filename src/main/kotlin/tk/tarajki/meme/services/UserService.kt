@@ -1,49 +1,31 @@
 package tk.tarajki.meme.services
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.LoginRequest
 import tk.tarajki.meme.dto.requests.RegisterRequest
 import tk.tarajki.meme.exceptions.UserRegisterException
-
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
-import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
-
 import tk.tarajki.meme.security.JwtTokenProvider
 import tk.tarajki.meme.util.Duration
 
 import java.util.*
-import kotlin.reflect.KClass
 
 
 @Service
-class UserService {
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var roleRepository: RoleRepository
-
-    @Autowired
-    private lateinit var bCryptPasswordEncoder: BCryptPasswordEncoder
-
-    @Autowired
-    private lateinit var authenticationManager: AuthenticationManager
-
-    @Autowired
-    private lateinit var jwtTokenProvider: JwtTokenProvider
-
-    @Autowired
-    private lateinit var banRepository: BanRepository
-
-    @Autowired
-    private lateinit var warnRepository: WarnRepository
+class UserService(
+        val userRepository: UserRepository,
+        val roleRepository: RoleRepository,
+        val bCryptPasswordEncoder: BCryptPasswordEncoder,
+        val authenticationManager: AuthenticationManager,
+        val jwtTokenProvider: JwtTokenProvider,
+        val banRepository: BanRepository,
+        val warnRepository: WarnRepository
+) {
 
 
     fun findUserByUsername(username: String): User? {

@@ -1,6 +1,6 @@
 package tk.tarajki.meme.factories
 
-import org.springframework.beans.factory.annotation.Autowired
+
 import org.springframework.stereotype.Component
 import tk.tarajki.meme.dto.models.PostDto
 import tk.tarajki.meme.dto.models.TagDto
@@ -9,13 +9,10 @@ import tk.tarajki.meme.models.Post
 import kotlin.reflect.KFunction
 
 @Component
-class PostDtoFactory {
-
-    @Autowired
-    private lateinit var userDtoFactory: UserDtoFactory
-
-    @Autowired
-    private lateinit var tagDtoFactory: TagDtoFactory
+class PostDtoFactory(
+        val userDtoFactory: UserDtoFactory,
+        val tagDtoFactory: TagDtoFactory
+) {
 
 
     fun getPostDto(post: Post, kind: KFunction<PostDto>): PostDto {

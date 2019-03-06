@@ -1,14 +1,11 @@
 package tk.tarajki.meme.config
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -21,16 +18,11 @@ import tk.tarajki.meme.services.UserDetailsServiceImpl
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig : WebSecurityConfigurerAdapter() {
-
-    @Autowired
-    private lateinit var userDetailsService: UserDetailsServiceImpl
-
-    @Autowired
-    private lateinit var bCryptPasswordEncoder: BCryptPasswordEncoder
-
-    @Autowired
-    private lateinit var jwtAuthorizationFilter: JwtAuthorizationFilter
+class WebSecurityConfig(
+        val userDetailsService: UserDetailsServiceImpl,
+        val bCryptPasswordEncoder: BCryptPasswordEncoder,
+        val jwtAuthorizationFilter: JwtAuthorizationFilter
+) : WebSecurityConfigurerAdapter() {
 
 
     override fun configure(auth: AuthenticationManagerBuilder) {
@@ -57,8 +49,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .antMatchers("/api/v1/users/*/posts").permitAll()
                 .antMatchers("/api/v1/users/*/comments").permitAll()
 
-                .antMatchers(HttpMethod.GET,"/api/v1/posts/*").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/v1/posts/*/comments").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/posts/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/posts/*/comments").permitAll()
 
 
                 .anyRequest().authenticated()

@@ -14,13 +14,10 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class JwtAuthorizationFilter : OncePerRequestFilter() {
-
-    @Autowired
-    private lateinit var jwtTokenProvider: JwtTokenProvider
-
-    @Autowired
-    private lateinit var userDetailsService: UserDetailsServiceImpl
+class JwtAuthorizationFilter(
+        val jwtTokenProvider: JwtTokenProvider,
+        val userDetailsService: UserDetailsServiceImpl
+) : OncePerRequestFilter() {
 
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {

@@ -1,6 +1,5 @@
 package tk.tarajki.meme.services
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.PostRequest
@@ -13,18 +12,12 @@ import tk.tarajki.meme.repositories.PostRepository
 import tk.tarajki.meme.repositories.TagRepository
 
 @Service
-class PostService {
+class PostService(
+        val postRepository: PostRepository,
+        val commentRepository: CommentRepository,
+        val tagRepository: TagRepository
+) {
 
-
-    @Autowired
-    private lateinit var postRepository: PostRepository
-
-    @Autowired
-    private lateinit var commentRepository: CommentRepository
-
-
-    @Autowired
-    private lateinit var tagRepository: TagRepository
 
     fun findAll(): List<Post>? {
         return postRepository.findAll()

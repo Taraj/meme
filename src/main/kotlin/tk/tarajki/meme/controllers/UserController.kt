@@ -1,7 +1,5 @@
 package tk.tarajki.meme.controllers
 
-
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -19,25 +17,15 @@ import tk.tarajki.meme.util.Duration
 
 @RestController
 @RequestMapping("/api/v1/users")
-class UserController {
+class UserController(
+        val userService: UserService,
+        val userDtoFactory: UserDtoFactory,
+        val banDtoFactory: BanDtoFactory,
+        val warnDtoFactory: WarnDtoFactory,
+        val commentDtoFactory: CommentDtoFactory,
+        val postDtoFactory: PostDtoFactory
+) {
 
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var userDtoFactory: UserDtoFactory
-
-    @Autowired
-    private lateinit var banDtoFactory: BanDtoFactory
-
-    @Autowired
-    private lateinit var warnDtoFactory: WarnDtoFactory
-
-    @Autowired
-    private lateinit var commentDtoFactory: CommentDtoFactory
-
-    @Autowired
-    private lateinit var postDtoFactory: PostDtoFactory
 
     @GetMapping("/")
     fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {

@@ -1,19 +1,15 @@
 package tk.tarajki.meme.factories
 
 
-import org.springframework.beans.factory.annotation.Autowired
+
 import org.springframework.stereotype.Component
 import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.models.User
-import tk.tarajki.meme.services.UserService
 import java.util.*
 import kotlin.reflect.KFunction
 
 @Component
 class UserDtoFactory {
-
-    @Autowired
-    private lateinit var userService: UserService
 
 
     fun getUserDto(user: User, kind: KFunction<UserDto>): UserDto {

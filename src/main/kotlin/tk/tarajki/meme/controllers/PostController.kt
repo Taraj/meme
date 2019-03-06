@@ -1,6 +1,5 @@
 package tk.tarajki.meme.controllers
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import tk.tarajki.meme.dto.models.CommentDto
 import tk.tarajki.meme.dto.models.PostDto
-import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.PostRequest
 import tk.tarajki.meme.factories.CommentDtoFactory
@@ -20,16 +18,12 @@ import tk.tarajki.meme.services.PostService
 
 @RestController
 @RequestMapping("/api/v1/posts")
-class PostController {
+class PostController(
+        val postService: PostService,
+        val postDtoFactory: PostDtoFactory,
+        val commentDtoFactory: CommentDtoFactory
+) {
 
-    @Autowired
-    private lateinit var postService: PostService
-
-    @Autowired
-    private lateinit var postDtoFactory: PostDtoFactory
-
-    @Autowired
-    private lateinit var commentDtoFactory: CommentDtoFactory
 
     @GetMapping("/")
     fun getAllPosts(@AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
