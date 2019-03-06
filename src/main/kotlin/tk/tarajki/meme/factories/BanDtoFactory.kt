@@ -8,7 +8,7 @@ import kotlin.reflect.KFunction
 
 @Component
 class BanDtoFactory(
-        val userDtoFactory: UserDtoFactory
+        private val userDtoFactory: UserDtoFactory
 ) {
 
 

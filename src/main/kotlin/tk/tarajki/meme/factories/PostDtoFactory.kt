@@ -10,8 +10,8 @@ import kotlin.reflect.KFunction
 
 @Component
 class PostDtoFactory(
-        val userDtoFactory: UserDtoFactory,
-        val tagDtoFactory: TagDtoFactory
+        private val userDtoFactory: UserDtoFactory,
+        private val tagDtoFactory: TagDtoFactory
 ) {
 
 

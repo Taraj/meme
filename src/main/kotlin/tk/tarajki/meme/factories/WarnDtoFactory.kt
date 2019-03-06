@@ -9,7 +9,7 @@ import kotlin.reflect.KFunction
 
 @Component
 class WarnDtoFactory(
-        val userDtoFactory: UserDtoFactory
+        private val userDtoFactory: UserDtoFactory
 ) {
 
 

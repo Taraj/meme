@@ -3,6 +3,7 @@ package tk.tarajki.meme.services
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.PostRequest
+import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.Comment
 import tk.tarajki.meme.models.Post
 import tk.tarajki.meme.models.Tag
@@ -13,9 +14,9 @@ import tk.tarajki.meme.repositories.TagRepository
 
 @Service
 class PostService(
-        val postRepository: PostRepository,
-        val commentRepository: CommentRepository,
-        val tagRepository: TagRepository
+        private val postRepository: PostRepository,
+        private val commentRepository: CommentRepository,
+        private val tagRepository: TagRepository
 ) {
 
 
@@ -24,10 +25,8 @@ class PostService(
 
     }
 
-    fun findPostById(id: Long): Post? {
-        val po = postRepository.findPostById(id)
-        println(po?.comments?.size)
-        return po
+    fun findPostById(id: Long): Post {
+        return postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
     }
 
     fun addComment(post: Post, commentRequest: CommentRequest, author: User): Comment {

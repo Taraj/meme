@@ -19,9 +19,9 @@ import tk.tarajki.meme.services.PostService
 @RestController
 @RequestMapping("/api/v1/posts")
 class PostController(
-        val postService: PostService,
-        val postDtoFactory: PostDtoFactory,
-        val commentDtoFactory: CommentDtoFactory
+        private val postService: PostService,
+        private val postDtoFactory: PostDtoFactory,
+        private val commentDtoFactory: CommentDtoFactory
 ) {
 
 
@@ -39,7 +39,6 @@ class PostController(
     @GetMapping("/{id}")
     fun getPostById(@PathVariable id: Long, @AuthenticationPrincipal principal: UserPrincipal?): PostDto? {
         val post = postService.findPostById(id)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
         val kind = when {
             principal?.getRole() == RoleName.ROLE_ADMIN -> PostDto::Extended
             else -> PostDto::Basic
@@ -51,12 +50,10 @@ class PostController(
     @GetMapping("/{id}/comments")
     fun getPostComments(@PathVariable id: Long, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
         val post = postService.findPostById(id)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
         val kind = when {
             principal?.getRole() == RoleName.ROLE_ADMIN -> CommentDto::Extended
             else -> CommentDto::Basic
         }
-
         return post.comments?.map {
             commentDtoFactory.getCommentDto(it, kind)
         }
@@ -71,7 +68,6 @@ class PostController(
     @PostMapping("/{id}/comments")
     fun addNewComment(@PathVariable id: Long, @AuthenticationPrincipal principal: UserPrincipal, @RequestBody commentRequest: CommentRequest): ResponseEntity<Nothing> {
         val post = postService.findPostById(id)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
         postService.addComment(post, commentRequest, principal.user)
         return ResponseEntity(HttpStatus.CREATED)
     }

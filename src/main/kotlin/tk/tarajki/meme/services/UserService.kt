@@ -9,6 +9,7 @@ import tk.tarajki.meme.exceptions.UserRegisterException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
+import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
 import tk.tarajki.meme.security.JwtTokenProvider
@@ -31,8 +32,8 @@ class UserService(
         return userRepository.findUserByUsername(username)
     }
 
-    fun findUserByNickname(nickname: String): User? {
-        return userRepository.findUserByNickname(nickname)
+    fun findUserByNickname(nickname: String): User {
+        return userRepository.findUserByNickname(nickname) ?: throw ResourceNotFoundException("User not found.")
     }
 
     fun findAll(): List<User>? {

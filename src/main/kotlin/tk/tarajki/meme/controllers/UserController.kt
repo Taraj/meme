@@ -17,12 +17,12 @@ import tk.tarajki.meme.services.UserService
 @RestController
 @RequestMapping("/api/v1/users")
 class UserController(
-        val userService: UserService,
-        val userDtoFactory: UserDtoFactory,
-        val banDtoFactory: BanDtoFactory,
-        val warnDtoFactory: WarnDtoFactory,
-        val commentDtoFactory: CommentDtoFactory,
-        val postDtoFactory: PostDtoFactory
+        private val userService: UserService,
+        private val userDtoFactory: UserDtoFactory,
+        private val banDtoFactory: BanDtoFactory,
+        private val warnDtoFactory: WarnDtoFactory,
+        private val commentDtoFactory: CommentDtoFactory,
+        private val postDtoFactory: PostDtoFactory
 ) {
 
 
@@ -40,7 +40,6 @@ class UserController(
     @GetMapping("/{nickname}")
     fun getUserByNickname(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): UserDto? {
         val user = userService.findUserByNickname(nickname)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         val kind = when {
             principal?.getRole() == RoleName.ROLE_ADMIN -> UserDto::Extended
             else -> UserDto::Basic
@@ -51,8 +50,6 @@ class UserController(
     @PostMapping("/{nickname}/bans")
     fun banUser(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal, @RequestBody banRequest: BanRequest): ResponseEntity<Nothing> {
         val user = userService.findUserByNickname(nickname)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-
         userService.banUser(user, principal.user, banRequest.reason, banRequest.durationInHours)
         return ResponseEntity(HttpStatus.CREATED)
     }
@@ -60,7 +57,6 @@ class UserController(
     @GetMapping("/{nickname}/bans")
     fun getBans(@PathVariable nickname: String): List<BanDto>? {
         val user = userService.findUserByNickname(nickname)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         return user.bans?.map {
             banDtoFactory.getBanDto(it, BanDto::Basic)
         }
@@ -69,7 +65,6 @@ class UserController(
     @PostMapping("/{nickname}/warns")
     fun warnUser(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal, @RequestBody warnRequest: WarnRequest): ResponseEntity<Nothing> {
         val user = userService.findUserByNickname(nickname)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         userService.warnUser(user, principal.user, warnRequest.reason)
         return ResponseEntity(HttpStatus.CREATED)
     }
@@ -77,7 +72,6 @@ class UserController(
     @GetMapping("/{nickname}/warns")
     fun getWarns(@PathVariable nickname: String): List<WarnDto>? {
         val user = userService.findUserByNickname(nickname)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         return user.warns?.map {
             warnDtoFactory.getWarnDto(it, WarnDto::Basic)
         }
@@ -86,7 +80,6 @@ class UserController(
     @GetMapping("/{nickname}/posts")
     fun getPosts(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
         val user = userService.findUserByNickname(nickname)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         val kind = when {
             principal?.getRole() == RoleName.ROLE_ADMIN -> PostDto::Extended
             else -> PostDto::Basic
@@ -99,7 +92,6 @@ class UserController(
     @GetMapping("/{nickname}/comments")
     fun getComments(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
         val user = userService.findUserByNickname(nickname)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         val kind = when {
             principal?.getRole() == RoleName.ROLE_ADMIN -> CommentDto::Extended
             else -> CommentDto::Basic

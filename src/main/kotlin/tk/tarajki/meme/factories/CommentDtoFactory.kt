@@ -11,8 +11,8 @@ import kotlin.reflect.KFunction
 
 @Component
 class CommentDtoFactory(
-        val userDtoFactory: UserDtoFactory,
-        val postDtoFactory: PostDtoFactory
+        private val userDtoFactory: UserDtoFactory,
+        private val postDtoFactory: PostDtoFactory
 ) {
 
 
