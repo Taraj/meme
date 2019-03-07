@@ -10,8 +10,8 @@ data class Tag(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @NotBlank
-        @Size(min = 3, max = 32)
+        @field:NotBlank
+        @field:Size(min = 3, max = 32)
         @Column(nullable = false, unique = true, length = 32)
         val name: String,
 

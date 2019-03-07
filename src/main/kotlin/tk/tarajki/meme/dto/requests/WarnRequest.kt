@@ -4,6 +4,6 @@ import javax.validation.constraints.NotBlank
 
 data class WarnRequest(
 
-        @NotBlank
+        @field:NotBlank
         val reason: String
 )

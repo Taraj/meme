@@ -4,12 +4,12 @@ import javax.validation.constraints.NotBlank
 
 data class PostRequest(
 
-        @NotBlank
+        @field:NotBlank
         val title: String,
 
-        @NotBlank
+        @field:NotBlank
         val url: String,
 
-        @NotBlank
+        @field:NotBlank
         val tags: List<String>
 )

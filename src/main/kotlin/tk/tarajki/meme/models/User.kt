@@ -13,28 +13,28 @@ data class User(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @NotBlank
+        @field:NotBlank
         @Size(min = 3, max = 32)
         @Column(nullable = false, unique = true, length = 32)
         val username: String,
 
-        @NotBlank
+        @field:NotBlank
         @Size(min = 3, max = 32)
         @Column(nullable = false, length = 32)
         val avatarURL: String = "http://url.xy",
 
-        @NotBlank
+        @field:NotBlank
         @Size(min = 3, max = 32)
         @Column(nullable = false, unique = true, length = 32)
         var nickname: String,
 
-        @Email
-        @NotBlank
+        @field:Email
+        @field:NotBlank
         @Size(min = 3, max = 64)
         @Column(nullable = false, unique = true, length = 64)
         var email: String,
 
-        @NotBlank
+        @field:NotBlank
         @Column(nullable = false)
         val password: String,
 

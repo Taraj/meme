@@ -16,7 +16,7 @@ data class Warn(
         @DateTimeFormat
         val readAt: LocalDateTime? = null,
 
-        @NotBlank
+        @field:NotBlank
         @Column(nullable = false)
         val reason: String,
 

@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank
 
 data class CommentRequest(
 
-        @NotBlank
+        @field:NotBlank
         val content: String
 
 )

@@ -3,9 +3,9 @@ package tk.tarajki.meme.dto.requests
 import javax.validation.constraints.NotBlank
 
 data class BanRequest(
-        @NotBlank
+        @field:NotBlank
         val reason: String,
 
-        @NotBlank
+        @field:NotBlank
         val durationInHours: Long
 )

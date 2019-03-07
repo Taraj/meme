@@ -11,7 +11,7 @@ data class Comment(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @NotBlank
+        @field:NotBlank
         @Column(nullable = false)
         val content: String,
 

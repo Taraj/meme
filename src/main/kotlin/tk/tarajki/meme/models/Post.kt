@@ -4,6 +4,7 @@ package tk.tarajki.meme.models
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
+import javax.validation.constraints.NotBlank
 
 @Entity
 data class Post(
@@ -11,9 +12,11 @@ data class Post(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
+        @field:NotBlank
         @Column(nullable = false)
         val title: String,
 
+        @field:NotBlank
         @Column(nullable = false)
         val url: String,
 

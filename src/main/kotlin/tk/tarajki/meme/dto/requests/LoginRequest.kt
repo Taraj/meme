@@ -5,9 +5,9 @@ import javax.validation.constraints.NotBlank
 
 
 data class LoginRequest(
-        @NotBlank
+        @field:NotBlank
         val username: String,
 
-        @NotBlank
+        @field:NotBlank
         val password: String
 )

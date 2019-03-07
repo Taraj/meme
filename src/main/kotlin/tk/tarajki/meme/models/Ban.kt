@@ -12,12 +12,12 @@ data class Ban(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @Future
+        @field:Future
         @DateTimeFormat
         @Column(nullable = false)
         val expireAt: LocalDateTime,
 
-        @NotBlank
+        @field:NotBlank
         @Column(nullable = false)
         val reason: String,
 
