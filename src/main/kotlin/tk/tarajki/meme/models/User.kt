@@ -26,13 +26,13 @@ data class User(
         @field:NotBlank
         @Size(min = 3, max = 32)
         @Column(nullable = false, unique = true, length = 32)
-        var nickname: String,
+        val nickname: String,
 
         @field:Email
         @field:NotBlank
         @Size(min = 3, max = 64)
         @Column(nullable = false, unique = true, length = 64)
-        var email: String,
+        val email: String,
 
         @field:NotBlank
         @Column(nullable = false)
@@ -43,20 +43,20 @@ data class User(
 
         @JoinColumn(name = "target_id")
         @OneToMany(fetch = FetchType.EAGER)
-        var bans: List<Ban>? = null,
+        val bans: List<Ban>? = null,
 
         @JoinColumn(name = "target_id")
         @OneToMany(fetch = FetchType.LAZY)
-        var warns: List<Warn>? = null,
+        val warns: List<Warn>? = null,
 
         @JoinColumn(name = "author_id")
         @OneToMany(fetch = FetchType.LAZY)
-        var posts: List<Post>? = null,
+        val posts: List<Post>? = null,
 
         @JoinColumn(name = "author_id")
         @OneToMany(fetch = FetchType.LAZY)
-        var comments: List<Comment>? = null,
+        val comments: List<Comment>? = null,
 
         @Column(nullable = false)
-        var createdAt: LocalDateTime = LocalDateTime.now()
+        val createdAt: LocalDateTime = LocalDateTime.now()
 )

@@ -23,9 +23,9 @@ data class Comment(
         val post: Post,
 
         @ManyToOne(fetch = FetchType.LAZY)
-        var author: User,
+        val author: User,
 
         @DateTimeFormat
         @Column(nullable = false)
-        var createdAt: LocalDateTime = LocalDateTime.now()
+        val createdAt: LocalDateTime = LocalDateTime.now()
 )

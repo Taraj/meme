@@ -22,8 +22,8 @@ class UserController(
     @GetMapping("/", "")
     fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> userService.findAll()?.map { UserDto.Extended(it) }
-            else -> userService.findAll()?.map { UserDto.Basic(it) }
+            RoleName.ROLE_ADMIN -> userService.findAll()?.asSequence()?.map { UserDto.Extended(it) }?.toList()
+            else -> userService.findAll()?.asSequence()?.map { UserDto.Basic(it) }?.toList()
         }
     }
 
@@ -46,9 +46,9 @@ class UserController(
     @GetMapping("/{nickname}/bans")
     fun getBans(@PathVariable nickname: String): List<BanDto>? {
         val user = userService.findUserByNickname(nickname)
-        return user.bans?.map {
+        return user.bans?.asSequence()?.map {
             BanDto.Basic(it)
-        }
+        }?.toList()
     }
 
     @PostMapping("/{nickname}/warns")
@@ -61,23 +61,23 @@ class UserController(
     @GetMapping("/{nickname}/warns")
     fun getWarns(@PathVariable nickname: String): List<WarnDto>? {
         val user = userService.findUserByNickname(nickname)
-        return user.warns?.map {
+        return user.warns?.asSequence()?.map {
             WarnDto.Basic(it)
-        }
+        }?.toList()
     }
 
     @GetMapping("/{nickname}/posts")
     fun getPosts(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
         val user = userService.findUserByNickname(nickname)
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> user.posts?.map {
+            RoleName.ROLE_ADMIN -> user.posts?.asSequence()?.map {
                 PostDto.Extended(it)
-            }
-            else -> user.posts?.filter {
+            }?.toList()
+            else -> user.posts?.asSequence()?.filter {
                 it.deletedBy == null
             }?.map {
                 PostDto.Basic(it)
-            }
+            }?.toList()
         }
     }
 
@@ -85,14 +85,14 @@ class UserController(
     fun getComments(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
         val user = userService.findUserByNickname(nickname)
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> user.comments?.map {
+            RoleName.ROLE_ADMIN -> user.comments?.asSequence()?.map {
                 CommentDto.Extended(it)
-            }
-            else -> user.comments?.filter {
+            }?.toList()
+            else -> user.comments?.asSequence()?.filter {
                 it.deletedBy == null
             }?.map {
                 CommentDto.Basic(it)
-            }
+            }?.toList()
         }
     }
 }

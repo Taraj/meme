@@ -1,6 +1,5 @@
 package tk.tarajki.meme.services
 
-import org.hibernate.Session
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.PostRequest
@@ -27,14 +26,17 @@ class PostService(
     }
 
     fun delete(post: Post, user: User): Post {
-        post.deletedBy = user
-
-        return postRepository.save(post)
+        val editedPost = post.copy(
+                deletedBy = user
+        )
+        return postRepository.save(editedPost)
     }
 
     fun accept(post: Post, user: User): Post {
-        post.confirmedBy = user
-        return postRepository.save(post)
+        val editedPost = post.copy(
+                confirmedBy = user
+        )
+        return postRepository.save(editedPost)
     }
 
     fun findPostById(id: Long): Post {
@@ -54,9 +56,9 @@ class PostService(
         val post = Post(
                 title = postRequest.title,
                 url = postRequest.url,
-                tags = postRequest.tags.map {
+                tags = postRequest.tags.asSequence().map {
                     getOrCreateTagByName(it)
-                },
+                }.toList(),
                 author = author
         )
         return postRepository.save(post)

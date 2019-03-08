@@ -24,10 +24,10 @@ data class Warn(
         val target: User,
 
         @ManyToOne(fetch = FetchType.LAZY)
-        var invoker: User,
+        val invoker: User,
 
         @DateTimeFormat
         @Column(nullable = false)
-        var createdAt: LocalDateTime = LocalDateTime.now()
+        val createdAt: LocalDateTime = LocalDateTime.now()
 
 )

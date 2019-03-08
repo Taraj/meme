@@ -22,5 +22,5 @@ data class Role(
 
 
         @Column(nullable = false)
-        var createdAt: LocalDateTime = LocalDateTime.now()
+        val createdAt: LocalDateTime = LocalDateTime.now()
 )

@@ -24,14 +24,14 @@ class PostController(
     fun getAllPosts(@AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
         val posts = postService.findAll()
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> posts?.map {
+            RoleName.ROLE_ADMIN -> posts?.asSequence()?.map {
                 PostDto.Extended(it)
-            }
-            else -> posts?.filter {
+            }?.toList()
+            else -> posts?.asSequence()?.filter {
                 it.deletedBy == null
             }?.map {
                 PostDto.Basic(it)
-            }
+            }?.toList()
         }
     }
 
@@ -66,14 +66,14 @@ class PostController(
     fun getPostComments(@PathVariable id: Long, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
         val post = postService.findPostById(id)
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> post.comments?.map {
+            RoleName.ROLE_ADMIN -> post.comments?.asSequence()?.map {
                 CommentDto.Extended(it)
-            }
-            else -> post.comments?.filter {
+            }?.toList()
+            else -> post.comments?.asSequence()?.filter {
                 it.deletedBy == null
             }?.map {
                 CommentDto.Basic(it)
-            }
+            }?.toList()
         }
     }
 
