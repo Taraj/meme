@@ -2,6 +2,7 @@ package tk.tarajki.meme.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -16,11 +17,12 @@ import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.services.UserDetailsServiceImpl
 
 
+
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig(
-        val userDetailsService: UserDetailsServiceImpl,
-        val bCryptPasswordEncoder: BCryptPasswordEncoder,
+        @Lazy val userDetailsService: UserDetailsServiceImpl,
+        @Lazy val bCryptPasswordEncoder: BCryptPasswordEncoder,
         val jwtAuthorizationFilter: JwtAuthorizationFilter
 ) : WebSecurityConfigurerAdapter() {
 
@@ -32,6 +34,11 @@ class WebSecurityConfig(
     @Bean
     override fun authenticationManager(): AuthenticationManager {
         return super.authenticationManager()
+    }
+
+    @Bean
+    fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
+        return BCryptPasswordEncoder()
     }
 
     override fun configure(http: HttpSecurity) {
@@ -57,13 +64,12 @@ class WebSecurityConfig(
                 .antMatchers(HttpMethod.DELETE, "/api/v1/posts/*").hasAuthority(RoleName.ROLE_ADMIN.name)
                 .antMatchers(HttpMethod.PUT, "/api/v1/posts/*").hasAuthority(RoleName.ROLE_ADMIN.name)
 
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
 
 
 
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
     }
-
 
 }

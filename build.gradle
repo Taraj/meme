@@ -1,4 +1,5 @@
 plugins {
+    id 'war'
     id 'org.jetbrains.kotlin.plugin.jpa' version '1.2.71'
     id 'org.springframework.boot' version '2.1.3.RELEASE'
     id 'org.jetbrains.kotlin.jvm' version '1.2.71'
@@ -10,7 +11,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'java'
 
 group = 'tk.tarajki'
-version = '0.0.1-SNAPSHOT'
+version = '1'
 sourceCompatibility = '1.8'
 
 repositories {
@@ -30,9 +31,6 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-
-    
-
 
 }
 

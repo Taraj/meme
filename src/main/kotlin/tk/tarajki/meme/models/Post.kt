@@ -2,7 +2,6 @@ package tk.tarajki.meme.models
 
 
 import java.time.LocalDateTime
-import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
@@ -34,14 +33,23 @@ data class Post(
         @ManyToOne(fetch = FetchType.LAZY)
         val confirmedBy: User? = null,
 
+        @Column
+        val confirmedAt: LocalDateTime? = null,
+
         @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
         val deletedBy: User? = null,
 
+        @Column
+        val deletedAt: LocalDateTime? = null,
 
         @JoinColumn(name = "post_id")
         @OneToMany(fetch = FetchType.LAZY)
         val comments: List<Comment>? = null,
+
+        @JoinColumn(name = "post_id")
+        @OneToMany(fetch = FetchType.LAZY)
+        val postFeedback: List<Feedback>? = null,
 
         @Column(nullable = false)
         val createdAt: LocalDateTime = LocalDateTime.now()

@@ -3,6 +3,7 @@ package tk.tarajki.meme.security
 
 import com.auth0.jwt.exceptions.TokenExpiredException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class JwtAuthorizationFilter(
         private val jwtTokenProvider: JwtTokenProvider,
-        private val userDetailsService: UserDetailsServiceImpl
+       @Lazy private val userDetailsService: UserDetailsServiceImpl
 ) : OncePerRequestFilter() {
 
 

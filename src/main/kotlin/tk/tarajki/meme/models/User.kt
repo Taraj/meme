@@ -19,9 +19,8 @@ data class User(
         val username: String,
 
         @field:NotBlank
-        @Size(min = 3, max = 32)
-        @Column(nullable = false, length = 32)
-        val avatarURL: String = "http://url.xy",
+        @Column(nullable = false)
+        val avatarURL: String = "https://www.w3schools.com/w3css/img_avatar3.png",
 
         @field:NotBlank
         @Size(min = 3, max = 32)

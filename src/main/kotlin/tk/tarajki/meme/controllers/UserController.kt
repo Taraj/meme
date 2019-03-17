@@ -12,6 +12,7 @@ import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.UserService
 
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/users")
 class UserController(

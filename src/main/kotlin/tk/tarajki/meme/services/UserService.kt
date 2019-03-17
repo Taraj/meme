@@ -5,10 +5,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.LoginRequest
 import tk.tarajki.meme.dto.requests.RegisterRequest
-import tk.tarajki.meme.exceptions.UserRegisterException
+import tk.tarajki.meme.exceptions.UserAuthException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
+import tk.tarajki.meme.dto.JwtAuthResponse
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
@@ -61,12 +62,12 @@ class UserService(
     }
 
     @Transactional
-    fun register(registerRequest: RegisterRequest): User? {
+    fun register(registerRequest: RegisterRequest): JwtAuthResponse {
 
         if (!isUniqueUserRegisterDto(registerRequest)) {
-            throw UserRegisterException("Invalid User.")
+            throw UserAuthException("Invalid User.")
         }
-        val role = roleRepository.findRoleByName(RoleName.ROLE_USER) ?: throw UserRegisterException("Bad role.")
+        val role = roleRepository.findRoleByName(RoleName.ROLE_USER) ?: throw UserAuthException("Bad role.")
 
         val user = User(
                 nickname = registerRequest.nickname,
@@ -76,29 +77,40 @@ class UserService(
                 role = role
         )
 
-        return userRepository.save(user)
+        userRepository.save(user)
+
+        return createAuthResponse(registerRequest.username)
     }
 
-    fun login(loginRequest: LoginRequest): String {
+    fun login(loginRequest: LoginRequest): JwtAuthResponse {
 
         authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password))
 
-        return jwtTokenProvider.createToken(loginRequest.username)
+        return createAuthResponse(loginRequest.username)
 
+    }
+
+    private fun createAuthResponse(username: String): JwtAuthResponse {
+        val user = userRepository.findUserByUsername(username) ?: throw UserAuthException("User not found")
+        return JwtAuthResponse(
+                accessToken = jwtTokenProvider.createToken(user.username),
+                isAdmin = user.role.name == RoleName.ROLE_ADMIN,
+                nickname = user.nickname
+        )
     }
 
     private fun isUniqueUserRegisterDto(registerRequest: RegisterRequest): Boolean {
 
         if (!isUniqueEmail(registerRequest.email)) {
-            throw UserRegisterException("Email already exist.")
+            throw UserAuthException("Email already exist.")
         }
 
         if (!isUniqueUsername(registerRequest.username)) {
-            throw UserRegisterException("Username already exist.")
+            throw UserAuthException("Username already exist.")
         }
 
         if (!isUniqueNickname(registerRequest.nickname)) {
-            throw UserRegisterException("Nickname already exist.")
+            throw UserAuthException("Nickname already exist.")
         }
 
         return true

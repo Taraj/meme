@@ -16,6 +16,8 @@ sealed class PostDto {
             val tags: List<TagDto>,
             val author: UserDto,
             val commentsCount: Int,
+            val likes: Int,
+            val dislikes: Int,
             val createdAt: LocalDateTime
     ) : PostDto() {
         constructor(post: Post) : this(
@@ -27,6 +29,12 @@ sealed class PostDto {
                 },
                 author = UserDto.Basic(post.author),
                 commentsCount = post.comments?.size ?: 0,
+                likes = post.postFeedback?.count {
+                    it.isPositive
+                } ?: 0,
+                dislikes = post.postFeedback?.count {
+                    !it.isPositive
+                } ?: 0,
                 createdAt = post.createdAt
         )
     }
@@ -40,6 +48,8 @@ sealed class PostDto {
             val confirmedBy: UserDto?,
             val deletedBy: UserDto?,
             val commentsCount: Int,
+            val likes: Int,
+            val dislikes: Int,
             val createdAt: LocalDateTime
     ) : PostDto() {
         constructor(post: Post) : this(
@@ -57,6 +67,12 @@ sealed class PostDto {
                     UserDto.Extended(it)
                 },
                 commentsCount = post.comments?.size ?: 0,
+                likes = post.postFeedback?.count {
+                    it.isPositive
+                } ?: 0,
+                dislikes = post.postFeedback?.count {
+                    !it.isPositive
+                } ?: 0,
                 createdAt = post.createdAt
         )
     }
