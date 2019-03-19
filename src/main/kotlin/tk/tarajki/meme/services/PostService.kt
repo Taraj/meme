@@ -1,5 +1,6 @@
 package tk.tarajki.meme.services
 
+
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.models.CommentDto
@@ -15,11 +16,9 @@ import tk.tarajki.meme.repositories.FeedbackRepository
 import tk.tarajki.meme.repositories.PostRepository
 import tk.tarajki.meme.repositories.TagRepository
 import java.time.LocalDateTime
+
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.primaryConstructor
+
 
 @Service
 class PostService(
@@ -29,12 +28,12 @@ class PostService(
         private val feedbackRepository: FeedbackRepository
 ) {
 
-    fun getAllBasicPostsDto(offset: Int, count: Int, confirmedOnly: Boolean, withDeleted: Boolean = false): List<PostDto> {
+    fun getAllPostsDto(offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
         val posts = postRepository.findAll()
         return posts.asSequence()
                 .sortedBy(Post::confirmedAt)
                 .filter {
-                    if (confirmedOnly) {
+                    if (confirmed) {
                         it.confirmedBy != null
                     } else {
                         it.confirmedBy == null
@@ -46,61 +45,26 @@ class PostService(
                 .drop(offset)
                 .take(count)
                 .map {
-                    PostDto.Basic(it)
+                    dtoFactory(it)
                 }.toList()
     }
 
-    fun getAllExtendedPostsDto(offset: Int, count: Int, confirmedOnly: Boolean, withDeleted: Boolean = true): List<PostDto> {
-        val posts = postRepository.findAll()
-        return posts.asSequence()
-                .sortedBy(Post::confirmedAt)
-                .filter {
-                    if (confirmedOnly) {
-                        it.confirmedBy != null
-                    } else {
-                        it.confirmedBy == null
-                    }
-                }
-                .filter {
-                    withDeleted || it.deletedBy == null
-                }
-                .drop(offset)
-                .take(count)
-                .map {
-                    PostDto.Extended(it)
-                }.toList()
-    }
-
-    fun getBasicPostDto(id: Long, withDeleted: Boolean = false): PostDto {
+    fun getPostDto(id: Long, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): PostDto {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found")
 
         if (withDeleted) {
-            return PostDto.Basic(post)
+            return dtoFactory(post)
         }
 
         if (post.deletedBy == null) {
-            return PostDto.Basic(post)
+            return dtoFactory(post)
         }
 
         throw ResourceNotFoundException("Post deleted.")
     }
 
-    fun getExtendedPostDto(id: Long, withDeleted: Boolean = true): PostDto {
 
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found")
-
-        if (withDeleted) {
-            return PostDto.Extended(post)
-        }
-
-        if (post.deletedBy == null) {
-            return PostDto.Extended(post)
-        }
-
-        throw ResourceNotFoundException("Post deleted.")
-    }
-
-    fun getRandomBasicPostDto(onlyConfirmed: Boolean = false): PostDto {
+    fun getRandomPostDto(onlyConfirmed: Boolean, dtoFactory: (Post) -> PostDto): PostDto {
         val posts = if (onlyConfirmed) {
             postRepository.findAllByDeletedByIsNullAndConfirmedByIsNotNull()
                     ?: throw ResourceNotFoundException("Post not found.")
@@ -108,7 +72,7 @@ class PostService(
             postRepository.findAllByDeletedByIsNull() ?: throw ResourceNotFoundException("Post not found.")
         }
         val randomId = ThreadLocalRandom.current().nextInt(posts.size)
-        return PostDto.Basic(posts[randomId])
+        return dtoFactory(posts[randomId])
     }
 
 
@@ -153,23 +117,13 @@ class PostService(
         return postRepository.save(post)
     }
 
-    fun getAllBasicCommentsDtoByPostId(id: Long, withDeleted: Boolean = false): List<CommentDto> {
+    fun getAllCommentsDtoByPostId(id: Long, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
         return post.comments?.asSequence()
                 ?.filter {
                     withDeleted || it.deletedBy == null
                 }?.map {
-                    CommentDto.Basic(it)
-                }?.toList() ?: listOf()
-    }
-
-    fun getAllExtendedCommentsDtoByPostId(id: Long, withDeleted: Boolean = true): List<CommentDto> {
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
-        return post.comments?.asSequence()
-                ?.filter {
-                    withDeleted || it.deletedBy == null
-                }?.map {
-                    CommentDto.Extended(it)
+                    dtoFactory(it)
                 }?.toList() ?: listOf()
     }
 
@@ -182,14 +136,14 @@ class PostService(
     @Transactional
     fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, ip: String): Feedback {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
-        if (feedbackRepository.findByAuthorIp(ip) == null) {
-            val feedback = Feedback(
-                    authorIp = ip,
-                    isPositive = feedbackRequest.like,
-                    post = post
-            )
-            return feedbackRepository.save(feedback)
-        }
+        //if (feedbackRepository.findByAuthorIp(ip) == null) {
+        val feedback = Feedback(
+                authorIp = ip,
+                isPositive = feedbackRequest.like,
+                post = post
+        )
+        return feedbackRepository.save(feedback)
+        //    }
         throw ResourceAlreadyExist("You already vote")
     }
 

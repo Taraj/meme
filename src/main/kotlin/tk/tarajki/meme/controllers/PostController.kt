@@ -11,8 +11,6 @@ import tk.tarajki.meme.dto.requests.PostRequest
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.PostService
-import javax.servlet.http.HttpServletResponse
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestMapping
 import tk.tarajki.meme.dto.requests.FeedbackRequest
 import javax.servlet.http.HttpServletRequest
@@ -26,14 +24,15 @@ class PostController(
 ) {
 
     @GetMapping("/", "")
-    fun getAllPosts(@AuthenticationPrincipal principal: UserPrincipal?,
-                    @RequestParam("offset", defaultValue = "0") offset: Int,
-                    @RequestParam("count", defaultValue = "10") count: Int,
-                    @RequestParam("confirmed", defaultValue = "false") confirmed: Boolean
+    fun getAllPosts(
+            @AuthenticationPrincipal principal: UserPrincipal?,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int,
+            @RequestParam("confirmed", defaultValue = "false") confirmed: Boolean
     ): List<PostDto> {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getAllExtendedPostsDto(offset, count, confirmed)
-            else -> postService.getAllBasicPostsDto(offset, count, confirmed)
+            RoleName.ROLE_ADMIN -> postService.getAllPostsDto(offset, count, confirmed, true, PostDto::Extended)
+            else -> postService.getAllPostsDto(offset, count, confirmed, false, PostDto::Basic)
         }
     }
 
@@ -43,14 +42,14 @@ class PostController(
             @PathVariable id: Long
     ): PostDto {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getExtendedPostDto(id)
-            else -> postService.getBasicPostDto(id)
+            RoleName.ROLE_ADMIN -> postService.getPostDto(id, true, PostDto::Extended)
+            else -> postService.getPostDto(id, false, PostDto::Basic)
         }
     }
 
     @GetMapping("/random")
     fun getRandomPost(): PostDto {
-        return postService.getRandomBasicPostDto()
+        return postService.getRandomPostDto(false, PostDto::Basic)
     }
 
     @DeleteMapping("/{id}")
@@ -77,8 +76,8 @@ class PostController(
             @PathVariable id: Long
     ): List<CommentDto>? {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getAllExtendedCommentsDtoByPostId(id)
-            else -> postService.getAllBasicCommentsDtoByPostId(id)
+            RoleName.ROLE_ADMIN -> postService.getAllCommentsDtoByPostId(id, true, CommentDto::Extended)
+            else -> postService.getAllCommentsDtoByPostId(id, false, CommentDto::Basic)
         }
     }
 
@@ -106,8 +105,9 @@ class PostController(
             @PathVariable id: Long,
             @RequestBody feedbackRequest: FeedbackRequest,
             request: HttpServletRequest
-    ) {
+    ): ResponseEntity<Unit> {
         postService.addFeedback(id, feedbackRequest, request.remoteAddr)
+        return ResponseEntity(HttpStatus.CREATED)
     }
 
 }
