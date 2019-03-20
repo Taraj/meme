@@ -7,7 +7,6 @@ import tk.tarajki.meme.dto.JwtAuthResponse
 import tk.tarajki.meme.dto.requests.LoginRequest
 import tk.tarajki.meme.dto.requests.RegisterRequest
 import tk.tarajki.meme.services.UserService
-import javax.validation.Valid
 
 
 @CrossOrigin

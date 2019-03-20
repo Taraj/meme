@@ -1,6 +1,5 @@
 package tk.tarajki.meme.services
 
-import org.springframework.context.annotation.Lazy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.dto.requests.LoginRequest
@@ -10,6 +9,9 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.JwtAuthResponse
+import tk.tarajki.meme.dto.models.*
+import tk.tarajki.meme.dto.requests.BanRequest
+import tk.tarajki.meme.dto.requests.WarnRequest
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
@@ -22,44 +24,98 @@ class UserService(
         private val userRepository: UserRepository,
         private val roleRepository: RoleRepository,
         private val bCryptPasswordEncoder: BCryptPasswordEncoder,
-        @Lazy private val authenticationManager: AuthenticationManager,
+        private val authenticationManager: AuthenticationManager,
         private val jwtTokenProvider: JwtTokenProvider,
         private val banRepository: BanRepository,
         private val warnRepository: WarnRepository
 ) {
 
-
-    fun findUserByUsername(username: String): User? {
-        return userRepository.findUserByUsername(username)
+    fun getAllUsersDto(offset: Int, count: Int, dtoFactory: (User) -> UserDto): List<UserDto> {
+        val users = userRepository.findAll()
+        return users.asSequence()
+                .map(dtoFactory)
+                .drop(offset)
+                .take(count)
+                .toList()
     }
 
-    fun findUserByNickname(nickname: String): User {
-        return userRepository.findUserByNickname(nickname) ?: throw ResourceNotFoundException("User not found.")
+    fun getUserDtoByNickname(nickname: String, dtoFactory: (User) -> UserDto): UserDto {
+        val user = findUserByNickname(nickname)
+        return dtoFactory(user)
     }
 
-    fun findAll(): List<User>? {
-        return userRepository.findAll()
+    fun getUserBansDtoByNickname(nickname: String, offset: Int, count: Int, dtoFactory: (Ban) -> BanDto): List<BanDto> {
+        val user = findUserByNickname(nickname)
+        return user.bans
+                ?.asSequence()
+                ?.map(dtoFactory)
+                ?.drop(offset)
+                ?.take(count)
+                ?.toList() ?: emptyList()
     }
 
-    fun banUser(target: User, invoker: User, reason: String, durationInHours: Long): Ban {
+    fun getUserWarnsDtoByNickname(nickname: String, offset: Int, count: Int, dtoFactory: (Warn) -> WarnDto): List<WarnDto> {
+        val user = findUserByNickname(nickname)
+        return user.warns
+                ?.asSequence()
+                ?.map(dtoFactory)
+                ?.drop(offset)
+                ?.take(count)
+                ?.toList() ?: emptyList()
+    }
 
+    fun getUserPostsDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
+        val user = findUserByNickname(nickname)
+        return user.posts
+                ?.asSequence()
+                ?.filter {
+                    withDeleted || it.deletedBy == null
+                }
+                ?.map(dtoFactory)
+                ?.drop(offset)
+                ?.take(count)
+                ?.toList() ?: emptyList()
+    }
+
+    fun getUserCommentsDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
+        val user = findUserByNickname(nickname)
+        return user.comments
+                ?.asSequence()
+                ?.filter {
+                    withDeleted || it.deletedBy == null
+                }
+                ?.map(dtoFactory)
+                ?.drop(offset)
+                ?.take(count)
+                ?.toList() ?: emptyList()
+    }
+
+
+    fun banUserByNickname(nickname: String, invoker: User, banRequest: BanRequest): Ban {
+        val user = findUserByNickname(nickname)
         val ban = Ban(
-                reason = reason,
-                expireAt = LocalDateTime.now().plusHours(durationInHours),
-                target = target,
+                reason = banRequest.reason,
+                expireAt = LocalDateTime.now().plusHours(banRequest.durationInHours),
+                target = user,
                 invoker = invoker
         )
         return banRepository.save(ban)
     }
 
-    fun warnUser(target: User, invoker: User, reason: String): Warn {
+    fun warnUserByNickname(nickname: String, invoker: User, warnRequest: WarnRequest): Warn {
+        val user = findUserByNickname(nickname)
         val warn = Warn(
-                reason = reason,
-                target = target,
+                reason = warnRequest.reason,
+                target = user,
                 invoker = invoker
         )
         return warnRepository.save(warn)
     }
+
+    fun findUserByUsername(username: String): User? {
+        return userRepository.findUserByUsername(username)
+    }
+
 
     @Transactional
     fun register(registerRequest: RegisterRequest): JwtAuthResponse {
@@ -97,6 +153,10 @@ class UserService(
                 isAdmin = user.role.name == RoleName.ROLE_ADMIN,
                 nickname = user.nickname
         )
+    }
+
+    private fun findUserByNickname(nickname: String): User {
+        return userRepository.findUserByNickname(nickname) ?: throw ResourceNotFoundException("User not found.")
     }
 
     private fun isUniqueUserRegisterDto(registerRequest: RegisterRequest): Boolean {

@@ -28,7 +28,7 @@ class PostController(
             @AuthenticationPrincipal principal: UserPrincipal?,
             @RequestParam("offset", defaultValue = "0") offset: Int,
             @RequestParam("count", defaultValue = "10") count: Int,
-            @RequestParam("confirmed", defaultValue = "false") confirmed: Boolean
+            @RequestParam("confirmed", defaultValue = "true") confirmed: Boolean
     ): List<PostDto> {
         return when (principal?.getRole()) {
             RoleName.ROLE_ADMIN -> postService.getAllPostsDto(offset, count, confirmed, true, PostDto::Extended)
@@ -73,11 +73,13 @@ class PostController(
     @GetMapping("/{id}/comments")
     fun getPostComments(
             @AuthenticationPrincipal principal: UserPrincipal?,
-            @PathVariable id: Long
+            @PathVariable id: Long,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
     ): List<CommentDto>? {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getAllCommentsDtoByPostId(id, true, CommentDto::Extended)
-            else -> postService.getAllCommentsDtoByPostId(id, false, CommentDto::Basic)
+            RoleName.ROLE_ADMIN -> postService.getAllCommentsDtoByPostId(id, offset, count, true, CommentDto::Extended)
+            else -> postService.getAllCommentsDtoByPostId(id, offset, count, false, CommentDto::Basic)
         }
     }
 

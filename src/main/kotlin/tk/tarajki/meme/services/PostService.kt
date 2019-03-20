@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.models.CommentDto
 import tk.tarajki.meme.dto.models.PostDto
+import tk.tarajki.meme.dto.models.TagDto
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.FeedbackRequest
 import tk.tarajki.meme.dto.requests.PostRequest
@@ -28,10 +29,19 @@ class PostService(
         private val feedbackRepository: FeedbackRepository
 ) {
 
+
+    fun getAllTagDto(offset: Int, count: Int, dtoFactory: (Tag) -> TagDto): List<TagDto> {
+        val tags = tagRepository.findAll()
+        return tags.asSequence()
+                .map(dtoFactory)
+                .drop(offset)
+                .take(count)
+                .toList()
+    }
+
     fun getAllPostsDto(offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
         val posts = postRepository.findAll()
         return posts.asSequence()
-                .sortedBy(Post::confirmedAt)
                 .filter {
                     if (confirmed) {
                         it.confirmedBy != null
@@ -44,10 +54,29 @@ class PostService(
                 }
                 .drop(offset)
                 .take(count)
-                .map {
-                    dtoFactory(it)
-                }.toList()
+                .map(dtoFactory)
+                .toList()
     }
+
+    fun getAllPostsDtoByTagName(tagName: String, offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
+       val tag = tagRepository.getTagByName(tagName)
+        return tag?.posts?.asSequence()
+                ?.filter {
+                    if (confirmed) {
+                        it.confirmedBy != null
+                    } else {
+                        it.confirmedBy == null
+                    }
+                }
+                ?.filter {
+                    withDeleted || it.deletedBy == null
+                }
+                ?.drop(offset)
+                ?.take(count)
+                ?.map(dtoFactory)
+                ?.toList()?: emptyList()
+    }
+
 
     fun getPostDto(id: Long, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): PostDto {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found")
@@ -117,14 +146,13 @@ class PostService(
         return postRepository.save(post)
     }
 
-    fun getAllCommentsDtoByPostId(id: Long, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
+    fun getAllCommentsDtoByPostId(id: Long, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
         return post.comments?.asSequence()
                 ?.filter {
                     withDeleted || it.deletedBy == null
-                }?.map {
-                    dtoFactory(it)
-                }?.toList() ?: listOf()
+                }?.map(dtoFactory)
+                ?.toList() ?: listOf()
     }
 
     private fun getOrCreateTagByName(name: String): Tag {

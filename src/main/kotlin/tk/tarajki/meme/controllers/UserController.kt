@@ -18,82 +18,90 @@ import tk.tarajki.meme.services.UserService
 class UserController(
         private val userService: UserService
 ) {
-
-
     @GetMapping("/", "")
-    fun getAllUsers(@AuthenticationPrincipal principal: UserPrincipal?): List<UserDto>? {
+    fun getAllUsers(
+            @AuthenticationPrincipal principal: UserPrincipal?,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
+    ): List<UserDto> {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> userService.findAll()?.asSequence()?.map { UserDto.Extended(it) }?.toList()
-            else -> userService.findAll()?.asSequence()?.map { UserDto.Basic(it) }?.toList()
+            RoleName.ROLE_ADMIN -> userService.getAllUsersDto(offset, count, UserDto::Extended)
+            else -> userService.getAllUsersDto(offset, count, UserDto::Basic)
         }
     }
 
     @GetMapping("/{nickname}")
-    fun getUserByNickname(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): UserDto? {
-        val user = userService.findUserByNickname(nickname)
+    fun getUserByNickname(
+            @PathVariable nickname: String,
+            @AuthenticationPrincipal principal: UserPrincipal?
+    ): UserDto {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> UserDto.Extended(user)
-            else -> UserDto.Basic(user)
+            RoleName.ROLE_ADMIN -> userService.getUserDtoByNickname(nickname, UserDto::Extended)
+            else -> userService.getUserDtoByNickname(nickname, UserDto::Basic)
         }
     }
 
     @PostMapping("/{nickname}/bans")
-    fun banUser(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal, @RequestBody banRequest: BanRequest): ResponseEntity<Nothing> {
-        val user = userService.findUserByNickname(nickname)
-        userService.banUser(user, principal.user, banRequest.reason, banRequest.durationInHours)
+    fun banUser(
+            @PathVariable nickname: String,
+            @AuthenticationPrincipal principal: UserPrincipal,
+            @RequestBody banRequest: BanRequest
+    ): ResponseEntity<Unit> {
+        userService.banUserByNickname(nickname, principal.user, banRequest)
         return ResponseEntity(HttpStatus.CREATED)
     }
 
     @GetMapping("/{nickname}/bans")
-    fun getBans(@PathVariable nickname: String): List<BanDto>? {
-        val user = userService.findUserByNickname(nickname)
-        return user.bans?.asSequence()?.map {
-            BanDto.Basic(it)
-        }?.toList()
+    fun getBans(
+            @PathVariable nickname: String,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
+    ): List<BanDto> {
+        return userService.getUserBansDtoByNickname(nickname, offset, count, BanDto::Basic)
     }
 
     @PostMapping("/{nickname}/warns")
-    fun warnUser(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal, @RequestBody warnRequest: WarnRequest): ResponseEntity<Nothing> {
-        val user = userService.findUserByNickname(nickname)
-        userService.warnUser(user, principal.user, warnRequest.reason)
+    fun warnUser(
+            @PathVariable nickname: String,
+            @AuthenticationPrincipal principal: UserPrincipal,
+            @RequestBody warnRequest: WarnRequest
+    ): ResponseEntity<Nothing> {
+        userService.warnUserByNickname(nickname, principal.user, warnRequest)
         return ResponseEntity(HttpStatus.CREATED)
     }
 
     @GetMapping("/{nickname}/warns")
-    fun getWarns(@PathVariable nickname: String): List<WarnDto>? {
-        val user = userService.findUserByNickname(nickname)
-        return user.warns?.asSequence()?.map {
-            WarnDto.Basic(it)
-        }?.toList()
+    fun getWarns(
+            @PathVariable nickname: String,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
+    ): List<WarnDto> {
+        return userService.getUserWarnsDtoByNickname(nickname, offset, count, WarnDto::Basic)
     }
 
     @GetMapping("/{nickname}/posts")
-    fun getPosts(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<PostDto>? {
-        val user = userService.findUserByNickname(nickname)
+    fun getPosts(
+            @PathVariable nickname: String,
+            @AuthenticationPrincipal principal: UserPrincipal?,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
+    ): List<PostDto> {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> user.posts?.asSequence()?.map {
-                PostDto.Extended(it)
-            }?.toList()
-            else -> user.posts?.asSequence()?.filter {
-                it.deletedBy == null
-            }?.map {
-                PostDto.Basic(it)
-            }?.toList()
+            RoleName.ROLE_ADMIN -> userService.getUserPostsDtoByNickname(nickname, offset, count, true, PostDto::Extended)
+            else -> userService.getUserPostsDtoByNickname(nickname, offset, count, false, PostDto::Basic)
         }
     }
 
     @GetMapping("/{nickname}/comments")
-    fun getComments(@PathVariable nickname: String, @AuthenticationPrincipal principal: UserPrincipal?): List<CommentDto>? {
-        val user = userService.findUserByNickname(nickname)
+    fun getComments(
+            @PathVariable nickname: String,
+            @AuthenticationPrincipal principal: UserPrincipal?,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
+    ): List<CommentDto>? {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> user.comments?.asSequence()?.map {
-                CommentDto.Extended(it)
-            }?.toList()
-            else -> user.comments?.asSequence()?.filter {
-                it.deletedBy == null
-            }?.map {
-                CommentDto.Basic(it)
-            }?.toList()
+            RoleName.ROLE_ADMIN -> userService.getUserCommentsDtoByNickname(nickname, offset, count, true, CommentDto::Extended)
+            else -> userService.getUserCommentsDtoByNickname(nickname, offset, count, false, CommentDto::Basic)
         }
     }
 }
