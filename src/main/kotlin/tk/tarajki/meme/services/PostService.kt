@@ -12,8 +12,8 @@ import tk.tarajki.meme.dto.requests.PostRequest
 import tk.tarajki.meme.exceptions.ResourceAlreadyExist
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.*
-import tk.tarajki.meme.repositories.CommentRepository
-import tk.tarajki.meme.repositories.FeedbackRepository
+import tk.tarajki.meme.repositories.PostCommentRepository
+import tk.tarajki.meme.repositories.PostFeedbackRepository
 import tk.tarajki.meme.repositories.PostRepository
 import tk.tarajki.meme.repositories.TagRepository
 import java.time.LocalDateTime
@@ -24,9 +24,9 @@ import java.util.concurrent.ThreadLocalRandom
 @Service
 class PostService(
         private val postRepository: PostRepository,
-        private val commentRepository: CommentRepository,
+        private val commentRepository: PostCommentRepository,
         private val tagRepository: TagRepository,
-        private val feedbackRepository: FeedbackRepository
+        private val feedbackRepository: PostFeedbackRepository
 ) {
 
 
@@ -124,9 +124,9 @@ class PostService(
     }
 
 
-    fun addComment(id: Long, commentRequest: CommentRequest, author: User): Comment {
+    fun addComment(id: Long, commentRequest: CommentRequest, author: User): PostComment {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
-        val comment = Comment(
+        val comment = PostComment(
                 content = commentRequest.content,
                 post = post,
                 author = author
@@ -146,7 +146,7 @@ class PostService(
         return postRepository.save(post)
     }
 
-    fun getAllCommentsDtoByPostId(id: Long, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
+    fun getAllCommentsDtoByPostId(id: Long, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (PostComment) -> CommentDto): List<CommentDto> {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
         return post.comments?.asSequence()
                 ?.filter {
@@ -162,13 +162,13 @@ class PostService(
     }
 
     @Transactional
-    fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, ip: String): Feedback {
+    fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, ip: String): PostFeedback {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
         //if (feedbackRepository.findByAuthorIp(ip) == null) {
-        val feedback = Feedback(
+        val feedback = PostFeedback(
                 authorIp = ip,
                 isPositive = feedbackRequest.like,
-                post = post
+                target = post
         )
         return feedbackRepository.save(feedback)
         //    }

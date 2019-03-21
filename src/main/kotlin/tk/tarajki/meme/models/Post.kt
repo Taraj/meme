@@ -45,11 +45,11 @@ data class Post(
 
         @JoinColumn(name = "post_id")
         @OneToMany(fetch = FetchType.LAZY)
-        val comments: List<Comment>? = null,
+        val comments: List<PostComment>? = null,
 
-        @JoinColumn(name = "post_id")
+        @JoinColumn(name = "target_id")
         @OneToMany(fetch = FetchType.LAZY)
-        val postFeedback: List<Feedback>? = null,
+        val postFeedback: List<PostFeedback>? = null,
 
         @Column(nullable = false)
         val createdAt: LocalDateTime = LocalDateTime.now()

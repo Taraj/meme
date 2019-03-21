@@ -32,4 +32,20 @@ class AuthController(
         return ResponseEntity(jwtAuthResponse, HttpStatus.CREATED)
     }
 
+    @GetMapping("/active")
+    fun activeAccount(
+            @RequestParam("token") token: String
+    ): ResponseEntity<Unit> {
+        userService.activeAccount(token)
+        return ResponseEntity(HttpStatus.ACCEPTED)
+    }
+
+    @GetMapping("/reset")
+    fun resetPassword(
+            @RequestParam("token") token: String
+    ): ResponseEntity<Unit> {
+        userService.resetPassword(token)
+        return ResponseEntity(HttpStatus.ACCEPTED)
+    }
+
 }

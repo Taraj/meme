@@ -1,12 +1,24 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
   datasource:
     url: jdbc:mysql://192.168.56.101:3306/meme?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root
     password: 123
 
+  mail:
+    host: smtp.gmail.com
+    username: archeage.taraj@gmail.com
+    password: ****
+    port: 587
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
 
 security:
   jwt:

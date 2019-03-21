@@ -7,7 +7,7 @@ import javax.validation.constraints.Future
 import javax.validation.constraints.NotBlank
 
 @Entity
-data class Feedback(
+data class PostFeedback(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
@@ -21,7 +21,7 @@ data class Feedback(
 
         @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
-        val post: Post,
+        val target: Post,
 
         @DateTimeFormat
         @Column(nullable = false)

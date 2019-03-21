@@ -77,7 +77,7 @@ class UserService(
                 ?.toList() ?: emptyList()
     }
 
-    fun getUserCommentsDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
+    fun getUserCommentsDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (PostComment) -> CommentDto): List<CommentDto> {
         val user = findUserByNickname(nickname)
         return user.comments
                 ?.asSequence()
@@ -188,5 +188,11 @@ class UserService(
         return userRepository.findUserByUsername(username) == null
     }
 
+    fun activeAccount(token: String) {
 
+    }
+
+    fun resetPassword(token: String) {
+
+    }
 }

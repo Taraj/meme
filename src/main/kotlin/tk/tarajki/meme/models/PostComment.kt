@@ -6,7 +6,7 @@ import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
 @Entity
-data class Comment(
+data class PostComment(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
