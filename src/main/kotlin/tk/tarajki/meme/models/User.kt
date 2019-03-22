@@ -1,6 +1,8 @@
 package tk.tarajki.meme.models
 
 import java.time.LocalDateTime
+import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
@@ -55,9 +57,8 @@ data class User(
         @OneToMany(fetch = FetchType.LAZY)
         val comments: List<PostComment>? = null,
 
-        @JoinColumn(name = "owner_id")
-        @OneToMany(fetch = FetchType.LAZY)
-        val activationToken: List<ActivationToken>? = null,
+        @Column
+        val activationToken: Int? = ThreadLocalRandom.current().nextInt(1000, 9999),
 
         @Column(nullable = false)
         val lastUpdate: LocalDateTime = LocalDateTime.now(),

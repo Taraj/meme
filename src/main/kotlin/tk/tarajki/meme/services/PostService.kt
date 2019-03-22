@@ -11,6 +11,7 @@ import tk.tarajki.meme.dto.requests.FeedbackRequest
 import tk.tarajki.meme.dto.requests.PostRequest
 import tk.tarajki.meme.exceptions.ResourceAlreadyExist
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
+import tk.tarajki.meme.exceptions.UserAuthException
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.PostCommentRepository
 import tk.tarajki.meme.repositories.PostFeedbackRepository
@@ -59,7 +60,7 @@ class PostService(
     }
 
     fun getAllPostsDtoByTagName(tagName: String, offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
-       val tag = tagRepository.getTagByName(tagName)
+        val tag = tagRepository.getTagByName(tagName)
         return tag?.posts?.asSequence()
                 ?.filter {
                     if (confirmed) {
@@ -74,7 +75,7 @@ class PostService(
                 ?.drop(offset)
                 ?.take(count)
                 ?.map(dtoFactory)
-                ?.toList()?: emptyList()
+                ?.toList() ?: emptyList()
     }
 
 
@@ -125,6 +126,8 @@ class PostService(
 
 
     fun addComment(id: Long, commentRequest: CommentRequest, author: User): PostComment {
+        if (author.activationToken != null)
+            throw UserAuthException("Account inactive.")
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
         val comment = PostComment(
                 content = commentRequest.content,
@@ -135,6 +138,8 @@ class PostService(
     }
 
     fun addPost(postRequest: PostRequest, author: User): Post {
+        if (author.activationToken != null)
+            throw UserAuthException("Account inactive.")
         val post = Post(
                 title = postRequest.title,
                 url = postRequest.url,
@@ -154,6 +159,7 @@ class PostService(
                 }?.map(dtoFactory)
                 ?.toList() ?: listOf()
     }
+
 
     private fun getOrCreateTagByName(name: String): Tag {
         return tagRepository.getTagByName(name) ?: tagRepository.save(Tag(

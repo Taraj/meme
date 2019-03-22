@@ -1,20 +1,49 @@
 package tk.tarajki.meme.controllers
 
 
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.*
+import tk.tarajki.meme.dto.models.UserDto
+import tk.tarajki.meme.dto.requests.ActiveRequest
+import tk.tarajki.meme.dto.requests.ChangePasswordRequest
+import tk.tarajki.meme.models.RoleName
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 import tk.tarajki.meme.security.UserPrincipal
+import tk.tarajki.meme.services.UserService
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/self")
-class SelfController {
+class SelfController(
+        private val userService: UserService
+) {
     @GetMapping("/")
-    fun whoAmI(@AuthenticationPrincipal principal: UserPrincipal): String {
-        return "Username: ${principal.username}"
+    fun whoAmI(@AuthenticationPrincipal principal: UserPrincipal): UserDto {
+        return when (principal.getRole()) {
+            RoleName.ROLE_ADMIN -> UserDto.Extended(principal.user)
+            else -> UserDto.Basic(principal.user)
+        }
     }
+
+    @PostMapping("/active")
+    fun activeAccount(
+            @RequestBody activeRequest: ActiveRequest,
+            @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<Unit> {
+        userService.activeAccount(principal.user, activeRequest)
+        return ResponseEntity(HttpStatus.ACCEPTED)
+    }
+
+    @PostMapping("/password")
+    fun changePassword(
+            @RequestBody changePasswordRequest: ChangePasswordRequest,
+            @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<Unit> {
+        userService.changePassword(principal.user, changePasswordRequest)
+        return ResponseEntity(HttpStatus.ACCEPTED)
+    }
+
+
 }

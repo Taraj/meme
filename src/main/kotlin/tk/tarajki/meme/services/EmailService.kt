@@ -10,11 +10,19 @@ class EmailService(
         private val javaMailSender: JavaMailSender
 ) {
 
-    fun sendEmail(email: String, subject: String, content: String) {
+    private fun sendEmail(email: String, subject: String, content: String) {
         val message = SimpleMailMessage()
         message.setTo(email)
         message.setSubject(subject)
         message.setText(content)
         javaMailSender.send(message)
+    }
+
+    fun sendConfirmationEmail(email: String, code: Int) {
+
+        val message = "Twój kod aktywacyjny to: $code"
+
+        sendEmail(email, "Aktywacja Konta", message)
+
     }
 }

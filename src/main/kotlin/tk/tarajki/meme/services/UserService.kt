@@ -2,16 +2,13 @@ package tk.tarajki.meme.services
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import tk.tarajki.meme.dto.requests.LoginRequest
-import tk.tarajki.meme.dto.requests.RegisterRequest
 import tk.tarajki.meme.exceptions.UserAuthException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.JwtAuthResponse
 import tk.tarajki.meme.dto.models.*
-import tk.tarajki.meme.dto.requests.BanRequest
-import tk.tarajki.meme.dto.requests.WarnRequest
+import tk.tarajki.meme.dto.requests.*
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
@@ -27,7 +24,8 @@ class UserService(
         private val authenticationManager: AuthenticationManager,
         private val jwtTokenProvider: JwtTokenProvider,
         private val banRepository: BanRepository,
-        private val warnRepository: WarnRepository
+        private val warnRepository: WarnRepository,
+        private val emailService: EmailService
 ) {
 
     fun getAllUsersDto(offset: Int, count: Int, dtoFactory: (User) -> UserDto): List<UserDto> {
@@ -116,6 +114,16 @@ class UserService(
         return userRepository.findUserByUsername(username)
     }
 
+    fun changePassword(user: User, changePasswordRequest: ChangePasswordRequest) {
+        if (bCryptPasswordEncoder.matches(changePasswordRequest.oldPassword, user.password)) {
+            userRepository.save(user.copy(
+                    password = bCryptPasswordEncoder.encode(changePasswordRequest.newPassword),
+                    lastUpdate = LocalDateTime.now()
+            ))
+        } else {
+            throw UserAuthException("Bad password")
+        }
+    }
 
     @Transactional
     fun register(registerRequest: RegisterRequest): JwtAuthResponse {
@@ -133,9 +141,14 @@ class UserService(
                 role = role
         )
 
-        userRepository.save(user)
+        val newUser = userRepository.save(user)
 
-        return createAuthResponse(registerRequest.username)
+        newUser.activationToken?.let {
+            emailService.sendConfirmationEmail(newUser.email, it)
+        }
+
+
+        return createAuthResponse(newUser.username)
     }
 
     fun login(loginRequest: LoginRequest): JwtAuthResponse {
@@ -188,7 +201,14 @@ class UserService(
         return userRepository.findUserByUsername(username) == null
     }
 
-    fun activeAccount(token: String) {
+    fun activeAccount(user: User, activeRequest: ActiveRequest) {
+        if (user.activationToken == activeRequest.code) {
+            userRepository.save(user.copy(
+                    activationToken = null
+            ))
+        } else {
+            throw UserAuthException("Bad token")
+        }
 
     }
 
