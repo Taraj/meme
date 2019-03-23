@@ -10,7 +10,7 @@ spring:
   mail:
     host: smtp.gmail.com
     username: archeage.taraj@gmail.com
-    password: ****
+    password: *
     port: 587
     properties:
       mail:

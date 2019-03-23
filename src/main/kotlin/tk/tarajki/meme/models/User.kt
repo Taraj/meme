@@ -50,7 +50,7 @@ data class User(
         val activationToken: Int? = ThreadLocalRandom.current().nextInt(1000, 9999),
 
         @Column(nullable = false)
-        val lastUpdate: LocalDateTime = LocalDateTime.now(),
+        val lastTokenRelease: LocalDateTime = LocalDateTime.now(),
 
         @Column(nullable = false)
         val createdAt: LocalDateTime = LocalDateTime.now()

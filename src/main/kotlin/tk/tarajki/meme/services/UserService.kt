@@ -164,7 +164,7 @@ class UserService(
     private fun createAuthResponse(username: String): JwtAuthResponse {
         val user = userRepository.findUserByUsername(username) ?: throw UserAuthException("User not found")
         return JwtAuthResponse(
-                accessToken = jwtTokenProvider.createToken(user.username),
+                accessToken = jwtTokenProvider.createToken(user.username, user.lastTokenRelease),
                 isAdmin = user.role.name == RoleName.ROLE_ADMIN,
                 nickname = user.nickname,
                 isActive = user.activationToken == null
@@ -219,7 +219,7 @@ class UserService(
         userRepository.save(
                 userRepository.save(user.copy(
                         password = bCryptPasswordEncoder.encode(newPassword),
-                        lastUpdate = LocalDateTime.now()
+                        lastTokenRelease = LocalDateTime.now()
                 ))
         )
     }
