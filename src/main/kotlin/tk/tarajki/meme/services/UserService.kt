@@ -1,5 +1,6 @@
 package tk.tarajki.meme.services
 
+import net.bytebuddy.utility.RandomString
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.exceptions.UserAuthException
@@ -14,6 +15,7 @@ import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
 import tk.tarajki.meme.security.JwtTokenProvider
 import java.time.LocalDateTime
+import java.util.concurrent.ThreadLocalRandom
 
 
 @Service
@@ -25,7 +27,8 @@ class UserService(
         private val jwtTokenProvider: JwtTokenProvider,
         private val banRepository: BanRepository,
         private val warnRepository: WarnRepository,
-        private val emailService: EmailService
+        private val emailService: EmailService,
+        private val passwordResetTokenRepository: PasswordResetTokenRepository
 ) {
 
     fun getAllUsersDto(offset: Int, count: Int, dtoFactory: (User) -> UserDto): List<UserDto> {
@@ -75,7 +78,7 @@ class UserService(
                 ?.toList() ?: emptyList()
     }
 
-    fun getUserCommentsDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (PostComment) -> CommentDto): List<CommentDto> {
+    fun getUserCommentsDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
         val user = findUserByNickname(nickname)
         return user.comments
                 ?.asSequence()
@@ -116,10 +119,7 @@ class UserService(
 
     fun changePassword(user: User, changePasswordRequest: ChangePasswordRequest) {
         if (bCryptPasswordEncoder.matches(changePasswordRequest.oldPassword, user.password)) {
-            userRepository.save(user.copy(
-                    password = bCryptPasswordEncoder.encode(changePasswordRequest.newPassword),
-                    lastUpdate = LocalDateTime.now()
-            ))
+            changePassword(user, changePasswordRequest.newPassword)
         } else {
             throw UserAuthException("Bad password")
         }
@@ -144,7 +144,7 @@ class UserService(
         val newUser = userRepository.save(user)
 
         newUser.activationToken?.let {
-            emailService.sendConfirmationEmail(newUser.email, it)
+            emailService.sendConfirmationEmail(newUser, it)
         }
 
 
@@ -164,7 +164,8 @@ class UserService(
         return JwtAuthResponse(
                 accessToken = jwtTokenProvider.createToken(user.username),
                 isAdmin = user.role.name == RoleName.ROLE_ADMIN,
-                nickname = user.nickname
+                nickname = user.nickname,
+                isActive = user.activationToken == null
         )
     }
 
@@ -212,7 +213,44 @@ class UserService(
 
     }
 
-    fun resetPassword(token: String) {
+    private fun changePassword(user: User, newPassword: String) {
+        userRepository.save(
+                userRepository.save(user.copy(
+                        password = bCryptPasswordEncoder.encode(newPassword),
+                        lastUpdate = LocalDateTime.now()
+                ))
+        )
+    }
 
+
+    fun resetPassword(confirmResetPasswordRequest: ConfirmResetPasswordRequest) {
+        val passwordResetToken = passwordResetTokenRepository.findPasswordResetTokenByCode(confirmResetPasswordRequest.code)
+                ?: throw ResourceNotFoundException("Not found")
+
+        if (passwordResetToken.expireAt < LocalDateTime.now()) {
+            throw ResourceNotFoundException("code expired")
+        }
+        val user = passwordResetToken.target
+
+        val newPassword = RandomString.make(8)
+        changePassword(user, newPassword)
+
+        passwordResetTokenRepository.delete(passwordResetToken)
+        emailService.sendNewPassword(user, newPassword)
+    }
+
+    fun sendResetPasswordEmail(sendResetPasswordRequest: SendResetPasswordRequest) {
+        val user = userRepository.findUserByUsernameOrEmail(sendResetPasswordRequest.usernameOrEmail, sendResetPasswordRequest.usernameOrEmail)
+                ?: throw ResourceNotFoundException("User not found")
+
+        val passwordResetToken = passwordResetTokenRepository.save(
+                PasswordResetToken(
+                        code = ThreadLocalRandom.current().nextInt(1000, 9999),
+                        expireAt = LocalDateTime.now().plusHours(2),
+                        target = user
+                )
+        )
+
+        emailService.sendResetPasswordRequest(user, passwordResetToken.code)
     }
 }

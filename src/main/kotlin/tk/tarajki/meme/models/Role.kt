@@ -18,7 +18,7 @@ data class Role(
 
         @JoinColumn(name = "id")
         @OneToMany(fetch = FetchType.LAZY)
-        val users: List<User>?,
+        val users: List<User>? = null,
 
 
         @Column(nullable = false)

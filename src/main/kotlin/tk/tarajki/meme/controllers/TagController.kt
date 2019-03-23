@@ -7,11 +7,12 @@ import tk.tarajki.meme.dto.models.TagDto
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.PostService
+import tk.tarajki.meme.services.TagService
 
 @RestController
 @RequestMapping("/api/v1/tags")
 class TagController(
-        private val postService: PostService
+        private val tagService: TagService
 ) {
 
     @GetMapping("/", "")
@@ -20,7 +21,7 @@ class TagController(
             @RequestParam("count", defaultValue = "10") count: Int,
             @RequestParam("confirmed", defaultValue = "true") confirmed: Boolean
     ): List<TagDto> {
-        return postService.getAllTagDto(offset, count, TagDto::Basic)
+        return tagService.getAllTagDto(offset, count, TagDto::Basic)
     }
 
     @GetMapping("/{name}/posts")
@@ -32,8 +33,8 @@ class TagController(
             @RequestParam("confirmed", defaultValue = "true") confirmed: Boolean
     ): List<PostDto> {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getAllPostsDtoByTagName(name, offset, count, confirmed, true, PostDto::Extended)
-            else -> postService.getAllPostsDtoByTagName(name, offset, count, confirmed, false, PostDto::Basic)
+            RoleName.ROLE_ADMIN -> tagService.getAllPostsDtoByTagName(name, offset, count, confirmed, true, PostDto::Extended)
+            else -> tagService.getAllPostsDtoByTagName(name, offset, count, confirmed, false, PostDto::Basic)
         }
     }
 }

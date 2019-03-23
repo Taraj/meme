@@ -3,27 +3,24 @@ package tk.tarajki.meme.models
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDateTime
 import javax.persistence.*
-import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Future
 
 @Entity
-data class UserComment(
+data class PasswordResetToken(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @field:NotBlank
+        @field:Future
+        @DateTimeFormat
         @Column(nullable = false)
-        val content: String,
+        val expireAt: LocalDateTime,
 
-        @JoinColumn
-        @ManyToOne(fetch = FetchType.LAZY)
-        val deletedBy: User? = null,
+        @Column(nullable = false)
+        val code: Int,
 
         @ManyToOne(fetch = FetchType.LAZY)
         val target: User,
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        val author: User,
 
         @DateTimeFormat
         @Column(nullable = false)

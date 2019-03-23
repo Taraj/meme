@@ -18,7 +18,7 @@ data class CommentFeedback(
 
 
         @ManyToOne(fetch = FetchType.LAZY)
-        val target: PostComment,
+        val target: Comment,
 
         @DateTimeFormat
         @Column(nullable = false)

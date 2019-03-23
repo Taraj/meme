@@ -1,6 +1,6 @@
 package tk.tarajki.meme.dto.models
 
-import tk.tarajki.meme.models.PostComment
+import tk.tarajki.meme.models.Comment
 import java.time.LocalDateTime
 
 sealed class CommentDto {
@@ -12,7 +12,7 @@ sealed class CommentDto {
             val author: UserDto,
             val createdAt: LocalDateTime
     ) : CommentDto() {
-        constructor(comment: PostComment) : this(
+        constructor(comment: Comment) : this(
                 id = comment.id,
                 content = comment.content,
                 post = PostDto.Extended(comment.post),
@@ -29,7 +29,7 @@ sealed class CommentDto {
             val deletedBy: UserDto?,
             val createdAt: LocalDateTime
     ) : CommentDto() {
-        constructor(comment: PostComment) : this(
+        constructor(comment: Comment) : this(
                 id = comment.id,
                 content = comment.content,
                 post = PostDto.Extended(comment.post),

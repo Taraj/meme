@@ -4,8 +4,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import tk.tarajki.meme.dto.JwtAuthResponse
+import tk.tarajki.meme.dto.requests.ConfirmResetPasswordRequest
 import tk.tarajki.meme.dto.requests.LoginRequest
 import tk.tarajki.meme.dto.requests.RegisterRequest
+import tk.tarajki.meme.dto.requests.SendResetPasswordRequest
 import tk.tarajki.meme.services.UserService
 
 
@@ -30,6 +32,22 @@ class AuthController(
     ): ResponseEntity<JwtAuthResponse> {
         val jwtAuthResponse = userService.register(registerRequest)
         return ResponseEntity(jwtAuthResponse, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/reset")
+    fun sendResetPasswordEmail(
+            @RequestBody sendResetPasswordRequest: SendResetPasswordRequest
+    ): ResponseEntity<Unit> {
+        userService.sendResetPasswordEmail(sendResetPasswordRequest)
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("/reset/confirm")
+    fun confirmPasswordReset(
+            @RequestBody confirmResetPasswordRequest: ConfirmResetPasswordRequest
+    ): ResponseEntity<Unit> {
+        userService.resetPassword(confirmResetPasswordRequest)
+        return ResponseEntity(HttpStatus.OK)
     }
 
 }

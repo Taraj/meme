@@ -10,4 +10,5 @@ class ServletInitializer : SpringBootServletInitializer() {
         return application.sources(MemeApplication::class.java)
     }
 
+
 }

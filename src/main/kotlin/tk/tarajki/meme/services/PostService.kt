@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.models.CommentDto
 import tk.tarajki.meme.dto.models.PostDto
-import tk.tarajki.meme.dto.models.TagDto
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.FeedbackRequest
 import tk.tarajki.meme.dto.requests.PostRequest
@@ -13,10 +12,9 @@ import tk.tarajki.meme.exceptions.ResourceAlreadyExist
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.exceptions.UserAuthException
 import tk.tarajki.meme.models.*
-import tk.tarajki.meme.repositories.PostCommentRepository
+import tk.tarajki.meme.repositories.CommentRepository
 import tk.tarajki.meme.repositories.PostFeedbackRepository
 import tk.tarajki.meme.repositories.PostRepository
-import tk.tarajki.meme.repositories.TagRepository
 import java.time.LocalDateTime
 
 import java.util.concurrent.ThreadLocalRandom
@@ -25,20 +23,10 @@ import java.util.concurrent.ThreadLocalRandom
 @Service
 class PostService(
         private val postRepository: PostRepository,
-        private val commentRepository: PostCommentRepository,
-        private val tagRepository: TagRepository,
+        private val commentRepository: CommentRepository,
+        private val tagService: TagService,
         private val feedbackRepository: PostFeedbackRepository
 ) {
-
-
-    fun getAllTagDto(offset: Int, count: Int, dtoFactory: (Tag) -> TagDto): List<TagDto> {
-        val tags = tagRepository.findAll()
-        return tags.asSequence()
-                .map(dtoFactory)
-                .drop(offset)
-                .take(count)
-                .toList()
-    }
 
     fun getAllPostsDto(offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
         val posts = postRepository.findAll()
@@ -58,26 +46,6 @@ class PostService(
                 .map(dtoFactory)
                 .toList()
     }
-
-    fun getAllPostsDtoByTagName(tagName: String, offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
-        val tag = tagRepository.getTagByName(tagName)
-        return tag?.posts?.asSequence()
-                ?.filter {
-                    if (confirmed) {
-                        it.confirmedBy != null
-                    } else {
-                        it.confirmedBy == null
-                    }
-                }
-                ?.filter {
-                    withDeleted || it.deletedBy == null
-                }
-                ?.drop(offset)
-                ?.take(count)
-                ?.map(dtoFactory)
-                ?.toList() ?: emptyList()
-    }
-
 
     fun getPostDto(id: Long, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): PostDto {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found")
@@ -125,11 +93,11 @@ class PostService(
     }
 
 
-    fun addComment(id: Long, commentRequest: CommentRequest, author: User): PostComment {
+    fun addComment(id: Long, commentRequest: CommentRequest, author: User): Comment {
         if (author.activationToken != null)
             throw UserAuthException("Account inactive.")
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
-        val comment = PostComment(
+        val comment = Comment(
                 content = commentRequest.content,
                 post = post,
                 author = author
@@ -144,14 +112,14 @@ class PostService(
                 title = postRequest.title,
                 url = postRequest.url,
                 tags = postRequest.tags.asSequence().map {
-                    getOrCreateTagByName(it)
+                    tagService.getOrCreateTag(it)
                 }.toList(),
                 author = author
         )
         return postRepository.save(post)
     }
 
-    fun getAllCommentsDtoByPostId(id: Long, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (PostComment) -> CommentDto): List<CommentDto> {
+    fun getAllCommentsDtoByPostId(id: Long, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
         return post.comments?.asSequence()
                 ?.filter {
@@ -161,11 +129,7 @@ class PostService(
     }
 
 
-    private fun getOrCreateTagByName(name: String): Tag {
-        return tagRepository.getTagByName(name) ?: tagRepository.save(Tag(
-                name = name
-        ))
-    }
+
 
     @Transactional
     fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, ip: String): PostFeedback {

@@ -45,7 +45,7 @@ data class Post(
 
         @JoinColumn(name = "post_id")
         @OneToMany(fetch = FetchType.LAZY)
-        val comments: List<PostComment>? = null,
+        val comments: List<Comment>? = null,
 
         @JoinColumn(name = "target_id")
         @OneToMany(fetch = FetchType.LAZY)
