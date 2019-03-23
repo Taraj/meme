@@ -11,6 +11,7 @@ import tk.tarajki.meme.dto.requests.WarnRequest
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.UserService
+import javax.validation.Valid
 
 
 @CrossOrigin
@@ -26,8 +27,8 @@ class UserController(
             @RequestParam("count", defaultValue = "10") count: Int
     ): List<UserDto> {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> userService.getAllUsersDto(offset, count, UserDto::Extended)
-            else -> userService.getAllUsersDto(offset, count, UserDto::Basic)
+            RoleName.ROLE_ADMIN -> userService.getAllUserDto(offset, count, UserDto::Extended)
+            else -> userService.getAllUserDto(offset, count, UserDto::Basic)
         }
     }
 
@@ -46,7 +47,7 @@ class UserController(
     fun banUser(
             @PathVariable nickname: String,
             @AuthenticationPrincipal principal: UserPrincipal,
-            @RequestBody banRequest: BanRequest
+            @RequestBody @Valid banRequest: BanRequest
     ): ResponseEntity<Unit> {
         userService.banUserByNickname(nickname, principal.user, banRequest)
         return ResponseEntity(HttpStatus.CREATED)
@@ -65,7 +66,7 @@ class UserController(
     fun warnUser(
             @PathVariable nickname: String,
             @AuthenticationPrincipal principal: UserPrincipal,
-            @RequestBody warnRequest: WarnRequest
+            @RequestBody @Valid warnRequest: WarnRequest
     ): ResponseEntity<Nothing> {
         userService.warnUserByNickname(nickname, principal.user, warnRequest)
         return ResponseEntity(HttpStatus.CREATED)
@@ -101,18 +102,28 @@ class UserController(
             @RequestParam("count", defaultValue = "10") count: Int
     ): List<CommentDto>? {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> userService.getUserCommentsDtoByNickname(nickname, offset, count, true, CommentDto::Extended)
-            else -> userService.getUserCommentsDtoByNickname(nickname, offset, count, false, CommentDto::Basic)
+            RoleName.ROLE_ADMIN -> userService.getUserCommentDtoByNickname(nickname, offset, count, true, CommentDto::Extended)
+            else -> userService.getUserCommentDtoByNickname(nickname, offset, count, false, CommentDto::Basic)
         }
     }
 
     @PostMapping("/{nickname}/feedback")
     fun addFeedback(
             @PathVariable nickname: String,
-            @RequestBody feedbackRequest: FeedbackRequest,
+            @RequestBody @Valid feedbackRequest: FeedbackRequest,
             @AuthenticationPrincipal principal: UserPrincipal
     ): ResponseEntity<Unit> {
         userService.addFeedback(nickname, feedbackRequest, principal.user)
         return ResponseEntity(HttpStatus.CREATED)
     }
+
+    @GetMapping("/{nickname}/feedback")
+    fun addFeedback(
+            @PathVariable nickname: String,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
+    ): List<UserFeedbackDto> {
+        return userService.getAllUserFeedbackDtoByNickname(nickname, offset, count, UserFeedbackDto::Basic)
+    }
+
 }

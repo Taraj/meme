@@ -1,13 +1,13 @@
 package tk.tarajki.meme.dto.requests
 
-
-import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotBlank
 
 
 data class LoginRequest(
-        @field:NotEmpty
+
+        @field:NotBlank
         val username: String,
 
-        @field:NotEmpty
+        @field:NotBlank
         val password: String
 )

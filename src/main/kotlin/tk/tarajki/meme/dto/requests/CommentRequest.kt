@@ -1,10 +1,11 @@
 package tk.tarajki.meme.dto.requests
 
-import javax.validation.constraints.NotBlank
+import tk.tarajki.meme.validators.annotations.Comment
+
 
 data class CommentRequest(
 
-        @field:NotBlank
+        @field:Comment
         val content: String
 
 )

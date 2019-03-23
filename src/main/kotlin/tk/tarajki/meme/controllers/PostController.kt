@@ -12,8 +12,10 @@ import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.PostService
 import org.springframework.web.bind.annotation.RequestMapping
+import tk.tarajki.meme.dto.models.PostFeedbackDto
 import tk.tarajki.meme.dto.requests.FeedbackRequest
 import javax.servlet.http.HttpServletRequest
+import javax.validation.Valid
 
 
 @CrossOrigin
@@ -31,8 +33,8 @@ class PostController(
             @RequestParam("confirmed", defaultValue = "true") confirmed: Boolean
     ): List<PostDto> {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getAllPostsDto(offset, count, confirmed, true, PostDto::Extended)
-            else -> postService.getAllPostsDto(offset, count, confirmed, false, PostDto::Basic)
+            RoleName.ROLE_ADMIN -> postService.getAllPostDto(offset, count, confirmed, true, PostDto::Extended)
+            else -> postService.getAllPostDto(offset, count, confirmed, false, PostDto::Basic)
         }
     }
 
@@ -42,8 +44,8 @@ class PostController(
             @PathVariable id: Long
     ): PostDto {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getPostDto(id, true, PostDto::Extended)
-            else -> postService.getPostDto(id, false, PostDto::Basic)
+            RoleName.ROLE_ADMIN -> postService.getPostDtoByPostId(id, true, PostDto::Extended)
+            else -> postService.getPostDtoByPostId(id, false, PostDto::Basic)
         }
     }
 
@@ -78,15 +80,15 @@ class PostController(
             @RequestParam("count", defaultValue = "10") count: Int
     ): List<CommentDto> {
         return when (principal?.getRole()) {
-            RoleName.ROLE_ADMIN -> postService.getAllCommentsDtoByPostId(id, offset, count, true, CommentDto::Extended)
-            else -> postService.getAllCommentsDtoByPostId(id, offset, count, false, CommentDto::Basic)
+            RoleName.ROLE_ADMIN -> postService.getAllCommentDtoByPostId(id, offset, count, true, CommentDto::Extended)
+            else -> postService.getAllCommentDtoByPostId(id, offset, count, false, CommentDto::Basic)
         }
     }
 
     @PostMapping("/")
     fun addNewPost(
             @AuthenticationPrincipal principal: UserPrincipal,
-            @RequestBody postRequest: PostRequest
+            @RequestBody @Valid postRequest: PostRequest
     ): ResponseEntity<Unit> {
         postService.addPost(postRequest, principal.user)
         return ResponseEntity(HttpStatus.CREATED)
@@ -96,7 +98,7 @@ class PostController(
     fun addNewComment(
             @AuthenticationPrincipal principal: UserPrincipal,
             @PathVariable id: Long,
-            @RequestBody commentRequest: CommentRequest
+            @RequestBody @Valid commentRequest: CommentRequest
     ): ResponseEntity<Unit> {
         postService.addComment(id, commentRequest, principal.user)
         return ResponseEntity(HttpStatus.CREATED)
@@ -105,11 +107,20 @@ class PostController(
     @PostMapping("/{id}/feedback")
     fun addFeedback(
             @PathVariable id: Long,
-            @RequestBody feedbackRequest: FeedbackRequest,
+            @RequestBody @Valid feedbackRequest: FeedbackRequest,
             request: HttpServletRequest
     ): ResponseEntity<Unit> {
         postService.addFeedback(id, feedbackRequest, request.remoteAddr)
         return ResponseEntity(HttpStatus.CREATED)
+    }
+
+    @GetMapping("/{id}/feedback")
+    fun getFeedback(
+            @PathVariable id: Long,
+            @RequestParam("offset", defaultValue = "0") offset: Int,
+            @RequestParam("count", defaultValue = "10") count: Int
+    ): List<PostFeedbackDto> {
+        return postService.getAllPostFeedbackDtoByPostId(id, offset, count, PostFeedbackDto::Basic)
     }
 
 }

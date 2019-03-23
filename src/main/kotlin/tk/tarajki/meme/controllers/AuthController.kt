@@ -9,6 +9,7 @@ import tk.tarajki.meme.dto.requests.LoginRequest
 import tk.tarajki.meme.dto.requests.RegisterRequest
 import tk.tarajki.meme.dto.requests.ResetPasswordRequest
 import tk.tarajki.meme.services.UserService
+import javax.validation.Valid
 
 
 @CrossOrigin
@@ -20,7 +21,7 @@ class AuthController(
 
     @PostMapping("/login")
     fun login(
-            @RequestBody loginRequest: LoginRequest
+            @RequestBody @Valid loginRequest: LoginRequest
     ): ResponseEntity<JwtAuthResponse> {
         val jwtAuthResponse = userService.login(loginRequest)
         return ResponseEntity(jwtAuthResponse, HttpStatus.OK)
@@ -28,7 +29,7 @@ class AuthController(
 
     @PostMapping("/register")
     fun register(
-            @RequestBody registerRequest: RegisterRequest
+            @RequestBody @Valid registerRequest: RegisterRequest
     ): ResponseEntity<JwtAuthResponse> {
         val jwtAuthResponse = userService.register(registerRequest)
         return ResponseEntity(jwtAuthResponse, HttpStatus.CREATED)
@@ -36,7 +37,7 @@ class AuthController(
 
     @PostMapping("/reset")
     fun sendResetPasswordEmail(
-            @RequestBody resetPasswordRequest: ResetPasswordRequest
+            @RequestBody @Valid resetPasswordRequest: ResetPasswordRequest
     ): ResponseEntity<Unit> {
         userService.sendResetPasswordEmail(resetPasswordRequest)
         return ResponseEntity(HttpStatus.ACCEPTED)
@@ -44,7 +45,7 @@ class AuthController(
 
     @PostMapping("/reset/confirm")
     fun confirmPasswordReset(
-            @RequestBody confirmResetPasswordRequest: ConfirmResetPasswordRequest
+            @RequestBody @Valid confirmResetPasswordRequest: ConfirmResetPasswordRequest
     ): ResponseEntity<Unit> {
         userService.resetPassword(confirmResetPasswordRequest)
         return ResponseEntity(HttpStatus.ACCEPTED)

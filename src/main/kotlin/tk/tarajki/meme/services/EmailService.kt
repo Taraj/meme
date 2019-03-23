@@ -16,7 +16,7 @@ class EmailService(
         message.setTo(email)
         message.setSubject(subject)
         message.setText(content)
-        javaMailSender.send(message)
+      //  javaMailSender.send(message)
     }
 
     fun sendConfirmationEmail(user: User, code: Int) {

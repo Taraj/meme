@@ -33,12 +33,12 @@ class UserService(
         private val userFeedbackRepository: UserFeedbackRepository
 ) {
 
-    fun getAllUsersDto(offset: Int, count: Int, dtoFactory: (User) -> UserDto): List<UserDto> {
+    fun getAllUserDto(offset: Int, count: Int, dtoFactory: (User) -> UserDto): List<UserDto> {
         val users = userRepository.findAll()
         return users.asSequence()
-                .map(dtoFactory)
                 .drop(offset)
                 .take(count)
+                .map(dtoFactory)
                 .toList()
     }
 
@@ -51,9 +51,9 @@ class UserService(
         val user = findUserByNickname(nickname)
         return user.bans
                 ?.asSequence()
-                ?.map(dtoFactory)
                 ?.drop(offset)
                 ?.take(count)
+                ?.map(dtoFactory)
                 ?.toList() ?: emptyList()
     }
 
@@ -61,9 +61,9 @@ class UserService(
         val user = findUserByNickname(nickname)
         return user.warns
                 ?.asSequence()
-                ?.map(dtoFactory)
                 ?.drop(offset)
                 ?.take(count)
+                ?.map(dtoFactory)
                 ?.toList() ?: emptyList()
     }
 
@@ -74,22 +74,22 @@ class UserService(
                 ?.filter {
                     withDeleted || it.deletedBy == null
                 }
-                ?.map(dtoFactory)
                 ?.drop(offset)
                 ?.take(count)
+                ?.map(dtoFactory)
                 ?.toList() ?: emptyList()
     }
 
-    fun getUserCommentsDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
+    fun getUserCommentDtoByNickname(nickname: String, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
         val user = findUserByNickname(nickname)
         return user.comments
                 ?.asSequence()
                 ?.filter {
                     withDeleted || it.deletedBy == null
                 }
-                ?.map(dtoFactory)
                 ?.drop(offset)
                 ?.take(count)
+                ?.map(dtoFactory)
                 ?.toList() ?: emptyList()
     }
 
@@ -255,6 +255,7 @@ class UserService(
 
         emailService.sendResetPasswordRequest(user, passwordResetToken.code)
     }
+
     @Transactional
     fun addFeedback(nickname: String, feedbackRequest: FeedbackRequest, author: User) {
         val user = userRepository.findUserByNickname(nickname) ?: throw ResourceNotFoundException("user not found")
@@ -270,5 +271,14 @@ class UserService(
         } else {
             throw ResourceAlreadyExist("You already vote")
         }
+    }
+
+    fun getAllUserFeedbackDtoByNickname(nickname: String,  offset: Int, count: Int,dtoFactory: (UserFeedback) -> UserFeedbackDto): List<UserFeedbackDto> {
+        val userFeedback = userFeedbackRepository.findAll()
+        return userFeedback.asSequence()
+                .drop(offset)
+                .take(count)
+                .map(dtoFactory)
+                .toList()
     }
 }

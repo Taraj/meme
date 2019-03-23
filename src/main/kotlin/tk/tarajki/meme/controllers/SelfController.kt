@@ -11,6 +11,7 @@ import tk.tarajki.meme.dto.requests.ChangePasswordRequest
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.UserService
+import javax.validation.Valid
 
 @CrossOrigin
 @RestController
@@ -28,7 +29,7 @@ class SelfController(
 
     @PostMapping("/active")
     fun activeAccount(
-            @RequestBody activeRequest: ActiveRequest,
+            @RequestBody @Valid activeRequest: ActiveRequest,
             @AuthenticationPrincipal principal: UserPrincipal
     ): ResponseEntity<Unit> {
         userService.activeAccount(principal.user, activeRequest)
@@ -37,7 +38,7 @@ class SelfController(
 
     @PostMapping("/password")
     fun changePassword(
-            @RequestBody changePasswordRequest: ChangePasswordRequest,
+            @RequestBody @Valid changePasswordRequest: ChangePasswordRequest,
             @AuthenticationPrincipal principal: UserPrincipal
     ): ResponseEntity<Unit> {
         userService.changePassword(principal.user, changePasswordRequest)
@@ -52,4 +53,5 @@ class SelfController(
     ): List<WarnDto> {
         return userService.getUserWarnsDtoByNickname(principal.user.nickname, offset, count, WarnDto::Basic)
     }
+
 }

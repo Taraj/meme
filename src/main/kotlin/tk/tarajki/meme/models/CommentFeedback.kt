@@ -16,7 +16,6 @@ data class CommentFeedback(
         @Column(nullable = false)
         val isPositive: Boolean,
 
-
         @ManyToOne(fetch = FetchType.LAZY)
         val target: Comment,
 

@@ -2,6 +2,7 @@ package tk.tarajki.meme.services
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tk.tarajki.meme.dto.models.CommentFeedbackDto
 import tk.tarajki.meme.dto.requests.FeedbackRequest
 import tk.tarajki.meme.exceptions.ResourceAlreadyExist
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
@@ -30,5 +31,14 @@ class CommentService(
         } else {
             throw ResourceAlreadyExist("You already vote")
         }
+    }
+
+    fun getAllCommentsFeedbackDtoByCommentId(id: Long, offset: Int, count: Int, dtoFactory: (CommentFeedback) -> CommentFeedbackDto): List<CommentFeedbackDto> {
+        val commentsFeedback = commentFeedbackRepository.findAll()
+        return commentsFeedback.asSequence()
+                .drop(offset)
+                .take(count)
+                .map(dtoFactory)
+                .toList()
     }
 }
