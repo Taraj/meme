@@ -6,8 +6,8 @@ Page with memes :)
 - JWT
 - MySQL
 - Hibernate 
-##Endpoints 
-###Guest
+## Endpoints 
+### Guest
 ````
 ├── /auth
 │ 	├── /login - POST
@@ -28,7 +28,7 @@ Page with memes :)
 	└── /{name}
 		└── /posts - GET
 ````
-###Active User
+### Active User
 ````
 ├── /auth
 │ 	├── /login - POST
@@ -54,7 +54,7 @@ Page with memes :)
 	├── /active - POST
 	└── /password - POST
 ````
-###Admin
+### Admin
 ```
 ├── /auth
 │ 	├── /login - POST
