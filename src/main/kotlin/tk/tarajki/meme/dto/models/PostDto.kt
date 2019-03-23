@@ -1,10 +1,7 @@
 package tk.tarajki.meme.dto.models
 
 import tk.tarajki.meme.models.Post
-import tk.tarajki.meme.models.Tag
-import tk.tarajki.meme.models.User
 import java.time.LocalDateTime
-import java.util.*
 
 
 sealed class PostDto {

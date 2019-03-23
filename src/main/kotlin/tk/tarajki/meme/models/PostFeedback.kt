@@ -3,7 +3,6 @@ package tk.tarajki.meme.models
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDateTime
 import javax.persistence.*
-import javax.validation.constraints.Future
 import javax.validation.constraints.NotBlank
 
 @Entity

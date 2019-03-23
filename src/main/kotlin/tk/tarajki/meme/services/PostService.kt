@@ -129,20 +129,18 @@ class PostService(
     }
 
 
-
-
     @Transactional
-    fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, ip: String): PostFeedback {
+    fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, ip: String) {
         val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
-        //if (feedbackRepository.findByAuthorIp(ip) == null) {
-        val feedback = PostFeedback(
-                authorIp = ip,
-                isPositive = feedbackRequest.like,
-                target = post
-        )
-        return feedbackRepository.save(feedback)
-        //    }
-        throw ResourceAlreadyExist("You already vote")
+        if (feedbackRepository.findPostFeedbackByAuthorIpAndTarget(ip, post) == null) {
+            feedbackRepository.save(PostFeedback(
+                    authorIp = ip,
+                    isPositive = feedbackRequest.like,
+                    target = post
+            ))
+        } else {
+            throw ResourceAlreadyExist("You already vote")
+        }
     }
 
 

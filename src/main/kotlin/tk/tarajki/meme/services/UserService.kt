@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.JwtAuthResponse
 import tk.tarajki.meme.dto.models.*
 import tk.tarajki.meme.dto.requests.*
+import tk.tarajki.meme.exceptions.ResourceAlreadyExist
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.*
 import tk.tarajki.meme.repositories.*
@@ -28,7 +29,8 @@ class UserService(
         private val banRepository: BanRepository,
         private val warnRepository: WarnRepository,
         private val emailService: EmailService,
-        private val passwordResetTokenRepository: PasswordResetTokenRepository
+        private val passwordResetTokenRepository: PasswordResetTokenRepository,
+        private val userFeedbackRepository: UserFeedbackRepository
 ) {
 
     fun getAllUsersDto(offset: Int, count: Int, dtoFactory: (User) -> UserDto): List<UserDto> {
@@ -239,8 +241,8 @@ class UserService(
         emailService.sendNewPassword(user, newPassword)
     }
 
-    fun sendResetPasswordEmail(sendResetPasswordRequest: SendResetPasswordRequest) {
-        val user = userRepository.findUserByUsernameOrEmail(sendResetPasswordRequest.usernameOrEmail, sendResetPasswordRequest.usernameOrEmail)
+    fun sendResetPasswordEmail(resetPasswordRequest: ResetPasswordRequest) {
+        val user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.usernameOrEmail, resetPasswordRequest.usernameOrEmail)
                 ?: throw ResourceNotFoundException("User not found")
 
         val passwordResetToken = passwordResetTokenRepository.save(
@@ -252,5 +254,21 @@ class UserService(
         )
 
         emailService.sendResetPasswordRequest(user, passwordResetToken.code)
+    }
+    @Transactional
+    fun addFeedback(nickname: String, feedbackRequest: FeedbackRequest, author: User) {
+        val user = userRepository.findUserByNickname(nickname) ?: throw ResourceNotFoundException("user not found")
+
+        if (userFeedbackRepository.findUserFeedbackByAuthorAndTarget(author, user) == null) {
+            userFeedbackRepository.save(
+                    UserFeedback(
+                            author = author,
+                            isPositive = feedbackRequest.like,
+                            target = user
+                    )
+            )
+        } else {
+            throw ResourceAlreadyExist("You already vote")
+        }
     }
 }

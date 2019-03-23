@@ -17,13 +17,12 @@ import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.services.UserDetailsServiceImpl
 
 
-
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig(
-        @Lazy val userDetailsService: UserDetailsServiceImpl,
-        @Lazy val bCryptPasswordEncoder: BCryptPasswordEncoder,
-        val jwtAuthorizationFilter: JwtAuthorizationFilter
+        @Lazy private val userDetailsService: UserDetailsServiceImpl,
+        @Lazy private val bCryptPasswordEncoder: BCryptPasswordEncoder,
+        private val jwtAuthorizationFilter: JwtAuthorizationFilter
 ) : WebSecurityConfigurerAdapter() {
 
 
@@ -48,23 +47,39 @@ class WebSecurityConfig(
 
         http.authorizeRequests()
                 .antMatchers("/error").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 .antMatchers("/api/v1/auth/**").permitAll()
 
-                .antMatchers("/api/v1/users").permitAll()
-                .antMatchers("/api/v1/users/*").permitAll()
-                .antMatchers("/api/v1/users/*/bans").hasAuthority(RoleName.ROLE_ADMIN.name)
-                .antMatchers("/api/v1/users/*/warns").hasAuthority(RoleName.ROLE_ADMIN.name)
-                .antMatchers("/api/v1/users/*/posts").permitAll()
-                .antMatchers("/api/v1/users/*/comments").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/users").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/users/*").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/users/*/posts").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/users/*/comments").permitAll()
 
                 .antMatchers(HttpMethod.GET, "/api/v1/posts").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/*/comments").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/posts/*/feedback").permitAll()
+
+                .antMatchers(HttpMethod.GET, "/api/v1/comments/*").permitAll()
+
+                .antMatchers(HttpMethod.GET, "/api/v1/tags").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/tags/*/posts").permitAll()
+
+
                 .antMatchers(HttpMethod.DELETE, "/api/v1/posts/*").hasAuthority(RoleName.ROLE_ADMIN.name)
                 .antMatchers(HttpMethod.PUT, "/api/v1/posts/*").hasAuthority(RoleName.ROLE_ADMIN.name)
 
-                .anyRequest().permitAll()
+
+                .antMatchers(HttpMethod.GET, "/api/v1/posts/*/feedback").hasAuthority(RoleName.ROLE_ADMIN.name)
+                .antMatchers(HttpMethod.GET, "/api/v1/comments/*/feedback").hasAuthority(RoleName.ROLE_ADMIN.name)
+                .antMatchers(HttpMethod.GET, "/api/v1/users/*/feedback").hasAuthority(RoleName.ROLE_ADMIN.name)
+
+                .antMatchers("/api/v1/users/*/bans").hasAuthority(RoleName.ROLE_ADMIN.name)
+                .antMatchers("/api/v1/users/*/warns").hasAuthority(RoleName.ROLE_ADMIN.name)
+
+
+                .anyRequest().authenticated()
 
 
 

@@ -58,7 +58,7 @@ class PostController(
             @PathVariable id: Long
     ): ResponseEntity<Unit> {
         postService.delete(id, principal.user)
-        return ResponseEntity(HttpStatus.OK)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
     @PutMapping("/{id}")
@@ -67,7 +67,7 @@ class PostController(
             @PathVariable id: Long
     ): ResponseEntity<Unit> {
         postService.accept(id, principal.user)
-        return ResponseEntity(HttpStatus.OK)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
     @GetMapping("/{id}/comments")
@@ -76,7 +76,7 @@ class PostController(
             @PathVariable id: Long,
             @RequestParam("offset", defaultValue = "0") offset: Int,
             @RequestParam("count", defaultValue = "10") count: Int
-    ): List<CommentDto>? {
+    ): List<CommentDto> {
         return when (principal?.getRole()) {
             RoleName.ROLE_ADMIN -> postService.getAllCommentsDtoByPostId(id, offset, count, true, CommentDto::Extended)
             else -> postService.getAllCommentsDtoByPostId(id, offset, count, false, CommentDto::Basic)

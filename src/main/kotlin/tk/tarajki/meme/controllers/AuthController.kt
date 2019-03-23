@@ -7,7 +7,7 @@ import tk.tarajki.meme.dto.JwtAuthResponse
 import tk.tarajki.meme.dto.requests.ConfirmResetPasswordRequest
 import tk.tarajki.meme.dto.requests.LoginRequest
 import tk.tarajki.meme.dto.requests.RegisterRequest
-import tk.tarajki.meme.dto.requests.SendResetPasswordRequest
+import tk.tarajki.meme.dto.requests.ResetPasswordRequest
 import tk.tarajki.meme.services.UserService
 
 
@@ -36,10 +36,10 @@ class AuthController(
 
     @PostMapping("/reset")
     fun sendResetPasswordEmail(
-            @RequestBody sendResetPasswordRequest: SendResetPasswordRequest
+            @RequestBody resetPasswordRequest: ResetPasswordRequest
     ): ResponseEntity<Unit> {
-        userService.sendResetPasswordEmail(sendResetPasswordRequest)
-        return ResponseEntity(HttpStatus.OK)
+        userService.sendResetPasswordEmail(resetPasswordRequest)
+        return ResponseEntity(HttpStatus.ACCEPTED)
     }
 
     @PostMapping("/reset/confirm")
@@ -47,7 +47,7 @@ class AuthController(
             @RequestBody confirmResetPasswordRequest: ConfirmResetPasswordRequest
     ): ResponseEntity<Unit> {
         userService.resetPassword(confirmResetPasswordRequest)
-        return ResponseEntity(HttpStatus.OK)
+        return ResponseEntity(HttpStatus.ACCEPTED)
     }
 
 }

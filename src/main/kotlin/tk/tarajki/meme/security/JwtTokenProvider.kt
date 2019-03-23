@@ -2,14 +2,8 @@ package tk.tarajki.meme.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-
 import org.springframework.stereotype.Component
-import tk.tarajki.meme.services.UserDetailsServiceImpl
-import java.util.*
-import java.util.Calendar
 
 @Component
 class JwtTokenProvider {

@@ -1,6 +1,5 @@
 package tk.tarajki.meme.controllers
 
-
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -8,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import tk.tarajki.meme.dto.requests.FeedbackRequest
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.CommentService
+
 
 @CrossOrigin
 @RestController
@@ -25,4 +25,5 @@ class CommentController(
         commentService.addFeedback(id, feedbackRequest, principal.user)
         return ResponseEntity(HttpStatus.CREATED)
     }
+
 }

@@ -18,7 +18,7 @@ Page with memes :)
 │	└── /{id} - GET
 │		├── /comments - GET
 │		└── /feedback - POST
-├── /users
+├── /users - GET
 │	└── /{nickname} - GET
 │		├── /posts - GET
 │		└── /comments - GET
@@ -39,7 +39,7 @@ Page with memes :)
 │	└── /{id} - GET
 │		├── /comments - GET / POST
 │		└── /feedback - POST
-├── /users
+├── /users - GET
 │	└── /{nickname} - GET
 │		├── /posts - GET
 │		├── /comments - GET
@@ -65,7 +65,7 @@ Page with memes :)
 │	└── /{id} - GET / DELETE / PUT
 │		├── /comments - GET / POST
 │		└── /feedback - POST / GET
-├── /users
+├── /users - GET
 │	└── /{nickname} - GET
 │		├── /bans - GET / POST
 │		├── /warns - GET / POST

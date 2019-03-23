@@ -2,14 +2,12 @@ package tk.tarajki.meme.security
 
 
 import com.auth0.jwt.exceptions.TokenExpiredException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import tk.tarajki.meme.services.UserDetailsServiceImpl
-import java.lang.Exception
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse

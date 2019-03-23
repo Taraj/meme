@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import tk.tarajki.meme.dto.models.*
 import tk.tarajki.meme.dto.requests.BanRequest
+import tk.tarajki.meme.dto.requests.FeedbackRequest
 import tk.tarajki.meme.dto.requests.WarnRequest
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
@@ -76,7 +77,7 @@ class UserController(
             @RequestParam("offset", defaultValue = "0") offset: Int,
             @RequestParam("count", defaultValue = "10") count: Int
     ): List<WarnDto> {
-        return userService.getUserWarnsDtoByNickname(nickname, offset, count, WarnDto::Basic)
+        return userService.getUserWarnsDtoByNickname(nickname, offset, count, WarnDto::Extended)
     }
 
     @GetMapping("/{nickname}/posts")
@@ -103,5 +104,15 @@ class UserController(
             RoleName.ROLE_ADMIN -> userService.getUserCommentsDtoByNickname(nickname, offset, count, true, CommentDto::Extended)
             else -> userService.getUserCommentsDtoByNickname(nickname, offset, count, false, CommentDto::Basic)
         }
+    }
+
+    @PostMapping("/{nickname}/feedback")
+    fun addFeedback(
+            @PathVariable nickname: String,
+            @RequestBody feedbackRequest: FeedbackRequest,
+            @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<Unit> {
+        userService.addFeedback(nickname, feedbackRequest, principal.user)
+        return ResponseEntity(HttpStatus.CREATED)
     }
 }
