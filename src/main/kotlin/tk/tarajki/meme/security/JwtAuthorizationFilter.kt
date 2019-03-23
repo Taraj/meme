@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class JwtAuthorizationFilter(
         private val jwtTokenProvider: JwtTokenProvider,
-       @Lazy private val userDetailsService: UserDetailsServiceImpl
+        @Lazy private val userDetailsService: UserDetailsServiceImpl
 ) : OncePerRequestFilter() {
 
 
@@ -41,7 +41,7 @@ class JwtAuthorizationFilter(
                 return
             }
 
-            if(!userDetails.isAccountNonLocked){
+            if (!userDetails.isAccountNonLocked) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Your account is baned.")
                 return
             }

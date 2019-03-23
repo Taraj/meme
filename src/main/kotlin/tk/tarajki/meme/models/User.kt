@@ -3,9 +3,7 @@ package tk.tarajki.meme.models
 import java.time.LocalDateTime
 import java.util.concurrent.ThreadLocalRandom
 import javax.persistence.*
-import javax.validation.constraints.Email
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Size
+
 
 @Entity
 data class User(
@@ -13,27 +11,19 @@ data class User(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @field:NotBlank
-        @Size(min = 3, max = 32)
         @Column(nullable = false, unique = true, length = 32)
         val username: String,
 
-        @field:NotBlank
+        @Lob
         @Column(nullable = false)
         val avatarURL: String = "https://www.w3schools.com/w3css/img_avatar3.png",
 
-        @field:NotBlank
-        @Size(min = 3, max = 32)
         @Column(nullable = false, unique = true, length = 32)
         val nickname: String,
 
-        @field:Email
-        @field:NotBlank
-        @Size(min = 3, max = 64)
         @Column(nullable = false, unique = true, length = 64)
         val email: String,
 
-        @field:NotBlank
         @Column(nullable = false)
         val password: String,
 

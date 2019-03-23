@@ -1,6 +1,5 @@
 package tk.tarajki.meme.validators.implementations
 
-import tk.tarajki.meme.validators.annotations.Comment
 import tk.tarajki.meme.validators.annotations.Nickname
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext

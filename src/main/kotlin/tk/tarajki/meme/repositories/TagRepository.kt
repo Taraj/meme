@@ -7,5 +7,5 @@ import tk.tarajki.meme.models.Tag
 
 @Repository
 interface TagRepository : JpaRepository<Tag, Long> {
-    fun getTagByName(name: String): Tag?
+    fun findTagByName(name: String): Tag?
 }

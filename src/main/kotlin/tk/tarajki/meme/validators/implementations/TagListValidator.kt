@@ -9,6 +9,11 @@ class TagListValidator : ConstraintValidator<TagList, List<String>> {
         if (tagList == null) {
             return false
         }
+
+        if(tagList.size !in 1..4){
+            return false
+        }
+
         return tagList.all {
             it.trim().length in 2..10
         }

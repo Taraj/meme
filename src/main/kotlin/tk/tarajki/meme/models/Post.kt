@@ -1,9 +1,8 @@
 package tk.tarajki.meme.models
 
-
 import java.time.LocalDateTime
 import javax.persistence.*
-import javax.validation.constraints.NotBlank
+
 
 @Entity
 data class Post(
@@ -11,11 +10,10 @@ data class Post(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        @field:NotBlank
         @Column(nullable = false)
         val title: String,
 
-        @field:NotBlank
+        @Lob
         @Column(nullable = false)
         val url: String,
 
@@ -25,18 +23,15 @@ data class Post(
                 inverseJoinColumns = [JoinColumn(name = "tag_id")])
         val tags: List<Tag>,
 
-        @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
         val author: User,
 
-        @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
         val confirmedBy: User? = null,
 
         @Column
         val confirmedAt: LocalDateTime? = null,
 
-        @JoinColumn
         @ManyToOne(fetch = FetchType.LAZY)
         val deletedBy: User? = null,
 

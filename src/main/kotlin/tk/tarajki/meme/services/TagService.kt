@@ -14,7 +14,7 @@ class TagService(
 ) {
     @Transactional
     fun getOrCreateTag(name: String): Tag {
-        return tagRepository.getTagByName(name) ?: tagRepository.save(
+        return tagRepository.findTagByName(name) ?: tagRepository.save(
                 Tag(
                         name = name
                 )
@@ -22,7 +22,7 @@ class TagService(
     }
 
     fun getAllPostsDtoByTagName(tagName: String, offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
-        val tag = tagRepository.getTagByName(tagName)
+        val tag = tagRepository.findTagByName(tagName)
         val posts = tag?.posts ?: return emptyList()
 
         return posts.asSequence()

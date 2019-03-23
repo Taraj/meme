@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository
 import tk.tarajki.meme.models.User
 import tk.tarajki.meme.models.UserFeedback
 
+
 @Repository
 interface UserFeedbackRepository : JpaRepository<UserFeedback, Long>{
     fun findUserFeedbackByAuthorAndTarget(author: User, target: User): UserFeedback?
