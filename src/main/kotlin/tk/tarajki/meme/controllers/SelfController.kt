@@ -19,11 +19,11 @@ import javax.validation.Valid
 class SelfController(
         private val userService: UserService
 ) {
-    @GetMapping("/")
+    @GetMapping("")
     fun whoAmI(@AuthenticationPrincipal principal: UserPrincipal): UserDto {
         return when (principal.getRole()) {
-            RoleName.ROLE_ADMIN -> UserDto.Extended(principal.user)
-            else -> UserDto.Basic(principal.user)
+            RoleName.ROLE_ADMIN -> userService.getUserDtoByNickname(principal.user.nickname, UserDto::Extended)
+            else -> userService.getUserDtoByNickname(principal.user.nickname, UserDto::Basic)
         }
     }
 
@@ -52,6 +52,14 @@ class SelfController(
             @RequestParam("count", defaultValue = "10") count: Int
     ): List<WarnDto> {
         return userService.getUserWarnsDtoByNickname(principal.user.nickname, offset, count, WarnDto::Basic)
+    }
+
+    @PostMapping("/logout")
+    fun logoutFromAll(
+            @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<Unit> {
+        userService.releaseNewToken(principal.user)
+        return ResponseEntity(HttpStatus.ACCEPTED)
     }
 
 }

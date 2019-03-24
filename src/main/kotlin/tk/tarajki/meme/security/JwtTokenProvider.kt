@@ -34,7 +34,7 @@ class JwtTokenProvider {
     }
 
     fun getLastTokenReleaseFromTokenPayload(payload: DecodedJWT): LocalDateTime {
-        val date = payload.claims["lastTokenRelease"] ?: throw UserAuthException("Bad Token")
+        val date = payload.claims["lastTokenRelease"] ?: throw UserAuthException("Payload not found")
 
         return LocalDateTime.ofEpochSecond(date.asLong(), 0, ZoneOffset.UTC)
     }

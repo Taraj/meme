@@ -14,6 +14,8 @@ class PasswordValidator : ConstraintValidator<Password, String> {
         if (password.trim().length !in 3..32) {
             return false
         }
+
+
         return true
     }
 }

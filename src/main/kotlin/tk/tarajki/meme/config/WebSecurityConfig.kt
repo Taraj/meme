@@ -81,8 +81,6 @@ class WebSecurityConfig(
 
                 .anyRequest().authenticated()
 
-
-
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
     }

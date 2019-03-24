@@ -52,6 +52,7 @@ Page with memes :)
 │		└── /posts - GET
 └── /self - GET
 	├── /active - POST
+	├── /logout - POST
 	└── /password - POST
 ````
 ### Admin
@@ -80,5 +81,6 @@ Page with memes :)
 │		└── /posts - GET
 └── /self - GET
 	├── /active - POST
+	├── /logout - POST
 	└── /password - POST
 ```

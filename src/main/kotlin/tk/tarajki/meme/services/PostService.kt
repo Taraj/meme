@@ -9,7 +9,7 @@ import tk.tarajki.meme.dto.models.PostFeedbackDto
 import tk.tarajki.meme.dto.requests.CommentRequest
 import tk.tarajki.meme.dto.requests.FeedbackRequest
 import tk.tarajki.meme.dto.requests.PostRequest
-import tk.tarajki.meme.exceptions.ResourceAlreadyExist
+import tk.tarajki.meme.exceptions.ResourceAlreadyExistException
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.exceptions.UserAuthException
 import tk.tarajki.meme.models.*
@@ -49,7 +49,7 @@ class PostService(
     }
 
     fun getPostDtoByPostId(id: Long, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): PostDto {
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found")
+        val post = findPostById(id)
 
         if (withDeleted) {
             return dtoFactory(post)
@@ -76,7 +76,10 @@ class PostService(
 
 
     fun delete(id: Long, user: User): Post {
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
+        if (user.activationToken != null) {
+            throw UserAuthException("Account inactive.")
+        }
+        val post = findPostById(id)
         val editedPost = post.copy(
                 deletedBy = user,
                 deletedAt = LocalDateTime.now()
@@ -85,7 +88,10 @@ class PostService(
     }
 
     fun accept(id: Long, user: User): Post {
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
+        if (user.activationToken != null) {
+            throw UserAuthException("Account inactive.")
+        }
+        val post = findPostById(id)
         val editedPost = post.copy(
                 confirmedBy = user,
                 confirmedAt = LocalDateTime.now()
@@ -95,9 +101,10 @@ class PostService(
 
 
     fun addComment(id: Long, commentRequest: CommentRequest, author: User): Comment {
-        if (author.activationToken != null)
+        if (author.activationToken != null) {
             throw UserAuthException("Account inactive.")
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
+        }
+        val post = findPostById(id)
         val comment = Comment(
                 content = commentRequest.content,
                 post = post,
@@ -107,8 +114,9 @@ class PostService(
     }
 
     fun addPost(postRequest: PostRequest, author: User): Post {
-        if (author.activationToken != null)
+        if (author.activationToken != null) {
             throw UserAuthException("Account inactive.")
+        }
         val post = Post(
                 title = postRequest.title,
                 url = postRequest.url,
@@ -121,26 +129,28 @@ class PostService(
     }
 
     fun getAllCommentDtoByPostId(id: Long, offset: Int, count: Int, withDeleted: Boolean, dtoFactory: (Comment) -> CommentDto): List<CommentDto> {
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
-        return post.comments?.asSequence()
-                ?.filter {
-                    withDeleted || it.deletedBy == null
-                }?.map(dtoFactory)
-                ?.toList() ?: listOf()
-    }
 
+        val comments = findPostById(id).comments ?: return emptyList()
+        return comments.asSequence()
+                .filter {
+                    withDeleted || it.deletedBy == null
+                }
+                .map(dtoFactory)
+                .toList()
+    }
 
     @Transactional
     fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, ip: String) {
-        val post = postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
+        val post = findPostById(id)
         if (postFeedbackRepository.findPostFeedbackByAuthorIpAndTarget(ip, post) == null) {
-            postFeedbackRepository.save(PostFeedback(
+            val feedback = PostFeedback(
                     authorIp = ip,
                     isPositive = feedbackRequest.like,
                     target = post
-            ))
+            )
+            postFeedbackRepository.save(feedback)
         } else {
-            throw ResourceAlreadyExist("You already vote")
+            throw ResourceAlreadyExistException("You already vote.")
         }
     }
 
@@ -153,4 +163,8 @@ class PostService(
                 .toList()
     }
 
+
+    private fun findPostById(id: Long): Post {
+        return postRepository.findPostById(id) ?: throw ResourceNotFoundException("Post not found.")
+    }
 }

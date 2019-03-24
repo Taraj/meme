@@ -15,7 +15,7 @@ class TagListValidator : ConstraintValidator<TagList, List<String>> {
         }
 
         return tagList.all {
-            it.trim().length in 2..10
+            it.trim().length in 2..20
         }
     }
 }

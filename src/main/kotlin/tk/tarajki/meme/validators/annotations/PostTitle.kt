@@ -1,6 +1,5 @@
 package tk.tarajki.meme.validators.annotations
 
-import tk.tarajki.meme.validators.implementations.PasswordValidator
 import tk.tarajki.meme.validators.implementations.PostTitleValidator
 import javax.validation.Constraint
 import javax.validation.Payload

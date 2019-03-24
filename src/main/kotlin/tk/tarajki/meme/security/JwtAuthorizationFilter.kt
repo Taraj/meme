@@ -37,7 +37,7 @@ class JwtAuthorizationFilter(
             val lastTokenRelease = try {
                 jwtTokenProvider.getLastTokenReleaseFromTokenPayload(tokenPayload)
             } catch (e: UserAuthException) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Something is wrong with Token: ${e.message}.")
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Something is wrong with Token.")
                 return
             }
 

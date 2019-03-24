@@ -4,8 +4,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.models.CommentFeedbackDto
 import tk.tarajki.meme.dto.requests.FeedbackRequest
-import tk.tarajki.meme.exceptions.ResourceAlreadyExist
+import tk.tarajki.meme.exceptions.ResourceAlreadyExistException
 import tk.tarajki.meme.exceptions.ResourceNotFoundException
+import tk.tarajki.meme.exceptions.UserAuthException
 import tk.tarajki.meme.models.CommentFeedback
 import tk.tarajki.meme.models.User
 import tk.tarajki.meme.repositories.CommentFeedbackRepository
@@ -18,7 +19,10 @@ class CommentService(
 ) {
     @Transactional
     fun addFeedback(id: Long, feedbackRequest: FeedbackRequest, author: User) {
-        val comment = commentRepository.findCommentById(id) ?: throw ResourceNotFoundException("Comment not found")
+        if (author.activationToken != null) {
+            throw UserAuthException("Account inactive.")
+        }
+        val comment = commentRepository.findCommentById(id) ?: throw ResourceNotFoundException("Comment not found.")
 
         if (commentFeedbackRepository.findCommentFeedbackByAuthorAndTarget(author, comment) == null) {
             commentFeedbackRepository.save(
@@ -29,7 +33,7 @@ class CommentService(
                     )
             )
         } else {
-            throw ResourceAlreadyExist("You already vote")
+            throw ResourceAlreadyExistException("You already vote.")
         }
     }
 

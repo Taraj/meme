@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.models.PostDto
 import tk.tarajki.meme.dto.models.TagDto
+import tk.tarajki.meme.exceptions.ResourceNotFoundException
 import tk.tarajki.meme.models.Post
 import tk.tarajki.meme.models.Tag
 import tk.tarajki.meme.repositories.TagRepository
@@ -22,8 +23,8 @@ class TagService(
     }
 
     fun getAllPostsDtoByTagName(tagName: String, offset: Int, count: Int, confirmed: Boolean, withDeleted: Boolean, dtoFactory: (Post) -> PostDto): List<PostDto> {
-        val tag = tagRepository.findTagByName(tagName)
-        val posts = tag?.posts ?: return emptyList()
+        val tag = tagRepository.findTagByName(tagName) ?: throw ResourceNotFoundException("Tag not found.")
+        val posts = tag.posts ?: return emptyList()
 
         return posts.asSequence()
                 .filter {

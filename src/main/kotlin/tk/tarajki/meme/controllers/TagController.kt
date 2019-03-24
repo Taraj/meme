@@ -15,7 +15,7 @@ class TagController(
         private val tagService: TagService
 ) {
 
-    @GetMapping("/", "")
+    @GetMapping( "")
     fun getAllTags(
             @RequestParam("offset", defaultValue = "0") offset: Int,
             @RequestParam("count", defaultValue = "10") count: Int,

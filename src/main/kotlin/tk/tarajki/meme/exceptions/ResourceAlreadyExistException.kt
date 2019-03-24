@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import java.lang.RuntimeException
 
 @ResponseStatus(value = HttpStatus.CONFLICT)
-class ResourceAlreadyExist(
+class ResourceAlreadyExistException(
         message: String
 ) : RuntimeException(message)

@@ -15,6 +15,15 @@ class UsernameValidator : ConstraintValidator<Username, String> {
         if (username.trim().length !in 3..32) {
             return false
         }
+
+        val containsSpecialChar = username.any {
+            !it.isLetterOrDigit()
+        }
+
+        if (containsSpecialChar) {
+            return false
+        }
+
         return true
     }
 }

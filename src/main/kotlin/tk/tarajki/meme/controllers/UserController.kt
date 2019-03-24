@@ -20,7 +20,7 @@ import javax.validation.Valid
 class UserController(
         private val userService: UserService
 ) {
-    @GetMapping("/", "")
+    @GetMapping( "")
     fun getAllUsers(
             @AuthenticationPrincipal principal: UserPrincipal?,
             @RequestParam("offset", defaultValue = "0") offset: Int,

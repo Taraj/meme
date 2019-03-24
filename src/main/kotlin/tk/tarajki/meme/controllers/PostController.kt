@@ -25,7 +25,7 @@ class PostController(
         private val postService: PostService
 ) {
 
-    @GetMapping("/", "")
+    @GetMapping( "")
     fun getAllPosts(
             @AuthenticationPrincipal principal: UserPrincipal?,
             @RequestParam("offset", defaultValue = "0") offset: Int,

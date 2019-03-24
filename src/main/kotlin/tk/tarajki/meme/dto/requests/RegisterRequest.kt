@@ -15,7 +15,7 @@ data class RegisterRequest(
         @field:Username
         val username: String,
 
-        @field:Email
+        @field:Email(message = "Email is not valid")
         val email: String,
 
         @field:Password

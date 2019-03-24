@@ -14,6 +14,9 @@ class PostTitleValidator : ConstraintValidator<PostTitle, String> {
         if (title.trim().length !in 3..32) {
             return false
         }
+
+
+
         return true
     }
 }

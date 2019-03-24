@@ -1,6 +1,5 @@
 package tk.tarajki.meme.dto.models
 
-import tk.tarajki.meme.models.PostFeedback
 import tk.tarajki.meme.models.UserFeedback
 import java.time.LocalDateTime
 
