@@ -36,6 +36,14 @@ class SelfController(
         return ResponseEntity(HttpStatus.ACCEPTED)
     }
 
+    @PostMapping("/active/resend")
+    fun resend(
+            @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<Unit> {
+        userService.resendActivationToken(principal.user)
+        return ResponseEntity(HttpStatus.ACCEPTED)
+    }
+
     @PostMapping("/password")
     fun changePassword(
             @RequestBody @Valid changePasswordRequest: ChangePasswordRequest,

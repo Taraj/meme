@@ -1,11 +1,14 @@
 package tk.tarajki.meme.services
 
 import net.bytebuddy.utility.RandomString
+import org.springframework.mail.MailException
+import org.springframework.mail.MailSendException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import tk.tarajki.meme.exceptions.UserAuthException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import tk.tarajki.meme.dto.JwtAuthResponse
 import tk.tarajki.meme.dto.models.*
@@ -144,7 +147,6 @@ class UserService(
         return userRepository.findUserByUsername(username)
     }
 
-
     @Transactional
     fun register(registerRequest: RegisterRequest): JwtAuthResponse {
 
@@ -203,7 +205,7 @@ class UserService(
         return userRepository.findUserByNickname(nickname) ?: throw ResourceNotFoundException("User not found.")
     }
 
-
+    @Transactional
     fun activeAccount(user: User, activeRequest: ActiveRequest) {
         if (user.activationToken == activeRequest.code) {
             val editedUser = user.copy(
@@ -224,7 +226,7 @@ class UserService(
         userRepository.save(editedUser)
     }
 
-
+    @Transactional
     fun resetPassword(confirmResetPasswordRequest: ConfirmResetPasswordRequest) {
 
         val passwordResetToken = passwordResetTokenRepository.findPasswordResetTokenByCode(confirmResetPasswordRequest.code)
@@ -247,6 +249,7 @@ class UserService(
         emailService.sendNewPassword(user, newPassword)
     }
 
+    @Transactional
     fun sendResetPasswordEmail(resetPasswordRequest: ResetPasswordRequest) {
         val user = userRepository.findUserByUsernameOrEmail(resetPasswordRequest.usernameOrEmail, resetPasswordRequest.usernameOrEmail)
                 ?: throw ResourceNotFoundException("User not found")
@@ -284,4 +287,19 @@ class UserService(
         }
     }
 
+    @Transactional
+    fun resendActivationToken(user: User) {
+        if (user.activationToken == null) {
+            throw ResourceAlreadyExistException("Your account is active.")
+        }
+        val editedUser = userRepository.save(
+                user.copy(
+                        activationToken = ThreadLocalRandom.current().nextInt(10000, 99999)
+                )
+        )
+
+        editedUser.activationToken?.let {
+            emailService.sendConfirmationEmail(editedUser, it)
+        }
+    }
 }

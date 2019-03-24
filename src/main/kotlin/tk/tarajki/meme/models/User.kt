@@ -47,7 +47,7 @@ data class User(
         val comments: List<Comment>? = null,
 
         @Column
-        val activationToken: Int? = ThreadLocalRandom.current().nextInt(1000, 9999),
+        val activationToken: Int? = ThreadLocalRandom.current().nextInt(10000, 99999),
 
         @Column(nullable = false)
         val lastTokenRelease: LocalDateTime = LocalDateTime.now(),

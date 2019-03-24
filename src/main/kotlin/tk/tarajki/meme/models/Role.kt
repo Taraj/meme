@@ -13,7 +13,7 @@ data class Role(
         @Column(nullable = false)
         val name: RoleName,
 
-        @JoinColumn(name = "id")
+        @JoinColumn(name = "role_id")
         @OneToMany(fetch = FetchType.LAZY)
         val users: List<User>? = null,
 

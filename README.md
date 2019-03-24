@@ -52,6 +52,7 @@ Page with memes :)
 │		└── /posts - GET
 └── /self - GET
 	├── /active - POST
+	│   └── /resend - POST
 	├── /logout - POST
 	└── /password - POST
 ````
@@ -81,6 +82,7 @@ Page with memes :)
 │		└── /posts - GET
 └── /self - GET
 	├── /active - POST
+	│    └── /resend - POST
 	├── /logout - POST
 	└── /password - POST
 ```
