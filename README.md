@@ -54,6 +54,7 @@ Page with memes :)
 	├── /active - POST
 	│   └── /resend - POST
 	├── /logout - POST
+	├── /avatar - POST
 	└── /password - POST
 ````
 ### Admin
@@ -84,5 +85,6 @@ Page with memes :)
 	├── /active - POST
 	│    └── /resend - POST
 	├── /logout - POST
+	├── /avatar - POST
 	└── /password - POST
 ```

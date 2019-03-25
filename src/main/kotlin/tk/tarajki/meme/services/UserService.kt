@@ -302,4 +302,10 @@ class UserService(
             emailService.sendConfirmationEmail(editedUser, it)
         }
     }
+    fun setAvatar(user:User, setAvatarRequest: SetAvatarRequest){
+        val editedUser = user.copy(
+                avatarURL = setAvatarRequest.avatarURL
+        )
+        userRepository.save(editedUser)
+    }
 }

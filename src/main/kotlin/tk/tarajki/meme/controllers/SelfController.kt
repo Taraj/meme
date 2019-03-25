@@ -8,6 +8,7 @@ import tk.tarajki.meme.dto.models.UserDto
 import tk.tarajki.meme.dto.models.WarnDto
 import tk.tarajki.meme.dto.requests.ActiveRequest
 import tk.tarajki.meme.dto.requests.ChangePasswordRequest
+import tk.tarajki.meme.dto.requests.SetAvatarRequest
 import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.UserService
@@ -70,4 +71,12 @@ class SelfController(
         return ResponseEntity(HttpStatus.ACCEPTED)
     }
 
+    @PostMapping("/avatar")
+    fun setAvatar(
+            @AuthenticationPrincipal principal: UserPrincipal,
+            @RequestBody @Valid setAvatarRequest: SetAvatarRequest
+    ): ResponseEntity<Unit> {
+        userService.setAvatar(principal.user, setAvatarRequest)
+        return ResponseEntity(HttpStatus.ACCEPTED)
+    }
 }
