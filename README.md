@@ -15,9 +15,10 @@ Page with memes :)
 │       └── /reset - POST
 │		└── /confirm - POST
 ├── /posts - GET
-│	└── /{id} - GET
-│		├── /comments - GET
-│		└── /feedback - POST
+│	├── /{id} - GET
+│	│	├── /comments - GET
+│	│	└── /feedback - POST
+│       └── /random - GET
 ├── /users - GET
 │	└── /{nickname} - GET
 │		├── /posts - GET
@@ -36,9 +37,10 @@ Page with memes :)
 │       └── /reset - POST
 │		└── /confirm - POST
 ├── /posts - POST / GET
-│	└── /{id} - GET
-│		├── /comments - GET / POST
-│		└── /feedback - POST
+│	├── /{id} - GET
+│	│	├── /comments - GET / POST
+│	│	└── /feedback - POST
+│       └── /random - GET
 ├── /users - GET
 │	└── /{nickname} - GET
 │		├── /posts - GET
@@ -65,9 +67,10 @@ Page with memes :)
 │       └── /reset - POST
 │		└── /confirm - POST
 ├── /posts - POST / GET
-│	└── /{id} - GET / DELETE / PUT
-│		├── /comments - GET / POST
-│		└── /feedback - POST / GET
+│	├── /{id} - GET / DELETE / PUT
+│	│	├── /comments - GET / POST
+│	│	└── /feedback - POST / GET
+│       └── /random - GET
 ├── /users - GET
 │	└── /{nickname} - GET
 │		├── /bans - GET / POST
