@@ -8,7 +8,7 @@ import tk.tarajki.meme.models.RoleName
 import tk.tarajki.meme.security.UserPrincipal
 import tk.tarajki.meme.services.TagService
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/tags")
 class TagController(

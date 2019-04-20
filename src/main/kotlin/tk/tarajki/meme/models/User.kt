@@ -46,6 +46,10 @@ data class User(
         @OneToMany(fetch = FetchType.LAZY)
         val comments: List<Comment>? = null,
 
+        @JoinColumn(name = "target_id")
+        @OneToMany(fetch = FetchType.LAZY)
+        val userFeedback: List<UserFeedback>? = null,
+
         @Column
         val activationToken: Int? = ThreadLocalRandom.current().nextInt(10000, 99999),
 

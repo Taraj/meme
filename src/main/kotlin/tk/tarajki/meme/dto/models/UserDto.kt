@@ -11,7 +11,9 @@ sealed class UserDto {
             val isBaned: Boolean,
             val joinedAt: LocalDateTime,
             val commentsCount: Int,
-            val postsCount: Int
+            val postsCount: Int,
+            val likes: Int,
+            val dislikes: Int
     ) : UserDto() {
         constructor(user: User) : this(
                 nickname = user.nickname,
@@ -21,7 +23,13 @@ sealed class UserDto {
                 } ?: false,
                 joinedAt = user.createdAt,
                 commentsCount = user.comments?.size ?: 0,
-                postsCount = user.posts?.size ?: 0
+                postsCount = user.posts?.size ?: 0,
+                likes =  user.userFeedback?.count {
+                    it.isPositive
+                } ?: 0,
+                dislikes =  user.userFeedback?.count {
+                    !it.isPositive
+                } ?: 0
         )
     }
 
@@ -34,7 +42,9 @@ sealed class UserDto {
             val isBaned: Boolean,
             val joinedAt: LocalDateTime,
             val commentsCount: Int,
-            val postsCount: Int
+            val postsCount: Int,
+            val likes: Int,
+            val dislikes: Int
     ) : UserDto() {
         constructor(user: User) : this(
                 id = user.id,
@@ -47,7 +57,13 @@ sealed class UserDto {
                 } ?: false,
                 joinedAt = user.createdAt,
                 commentsCount = user.comments?.size ?: 0,
-                postsCount = user.posts?.size ?: 0
+                postsCount = user.posts?.size ?: 0,
+                likes =  user.userFeedback?.count {
+                    it.isPositive
+                } ?: 0,
+                dislikes =  user.userFeedback?.count {
+                    !it.isPositive
+                } ?: 0
         )
     }
 
