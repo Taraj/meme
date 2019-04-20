@@ -10,15 +10,15 @@ Page with memes :)
 ### Guest
 ````
 ├── /auth
-│ 	├── /login - POST
+│	├── /login - POST
 │	├── /register - POST
-│       └── /reset - POST
+│	└── /reset - POST
 │		└── /confirm - POST
 ├── /posts - GET
 │	├── /{id} - GET
 │	│	├── /comments - GET
 │	│	└── /feedback - POST
-│       └── /random - GET
+│	└── /random - GET
 ├── /users - GET
 │	└── /{nickname} - GET
 │		├── /posts - GET
@@ -32,15 +32,15 @@ Page with memes :)
 ### Active User
 ````
 ├── /auth
-│ 	├── /login - POST
+│	├── /login - POST
 │	├── /register - POST
-│       └── /reset - POST
+│	└── /reset - POST
 │		└── /confirm - POST
 ├── /posts - POST / GET
 │	├── /{id} - GET
 │	│	├── /comments - GET / POST
 │	│	└── /feedback - POST
-│       └── /random - GET
+│	└── /random - GET
 ├── /users - GET
 │	└── /{nickname} - GET
 │		├── /posts - GET
@@ -54,7 +54,7 @@ Page with memes :)
 │		└── /posts - GET
 └── /self - GET
 	├── /active - POST
-	│   └── /resend - POST
+	│	└── /resend - POST
 	├── /logout - POST
 	├── /avatar - POST
 	└── /password - POST
@@ -62,15 +62,15 @@ Page with memes :)
 ### Admin
 ```
 ├── /auth
-│ 	├── /login - POST
+│	├── /login - POST
 │	├── /register - POST
-│       └── /reset - POST
+│	└── /reset - POST
 │		└── /confirm - POST
 ├── /posts - POST / GET
 │	├── /{id} - GET / DELETE / PUT
 │	│	├── /comments - GET / POST
 │	│	└── /feedback - POST / GET
-│       └── /random - GET
+│	└── /random - GET
 ├── /users - GET
 │	└── /{nickname} - GET
 │		├── /bans - GET / POST
@@ -86,7 +86,7 @@ Page with memes :)
 │		└── /posts - GET
 └── /self - GET
 	├── /active - POST
-	│    └── /resend - POST
+	│	└── /resend - POST
 	├── /logout - POST
 	├── /avatar - POST
 	└── /password - POST
